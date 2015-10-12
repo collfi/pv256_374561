@@ -17,40 +17,25 @@ import java.util.List;
 /**
  * Created by collfi on 11. 10. 2015.
  */
-public class NowPlayingAdapter extends BaseAdapter {
+public class MyAdapter extends BaseAdapter {
 
-    private List<String> mList;
-    private List<Bitmap> mBitmaps;
     private LayoutInflater inflater;
 
-    public NowPlayingAdapter(Context context, List<String> list) {
+    public MyAdapter(Context context) {
         inflater = LayoutInflater.from(context);
-        mList = new ArrayList<>(list);
-        mBitmaps = new ArrayList<>();
-        for (String s : mList) {
-            Bitmap bitmap = null;
-            try {
-                InputStream in = new java.net.URL(s).openStream();
-                bitmap = BitmapFactory.decodeStream(in);
-                mBitmaps.add(bitmap);
-            } catch (Exception e) {
-                Log.e("Error", e.getMessage());
-                e.printStackTrace();
-            }
-        }
     }
 
 
     @Override
     public int getCount() {
-        return mList.size();
+        return 40;
     }
-
+    //todo
     @Override
     public Object getItem(int position) {
         return position;
     }
-
+    //todo
     @Override
     public long getItemId(int position) {
         return position;
@@ -69,7 +54,7 @@ public class NowPlayingAdapter extends BaseAdapter {
         } else {
             holder = (ViewHolder) view.getTag();
         }
-        holder.image.setImageBitmap(mBitmaps.get(position));
+        holder.image.setImageResource(R.drawable.everest);
 //        ImageLoader.getInstance().displayImage(IMAGE_URLS[position], holder.image, options);
         return view;
     }
