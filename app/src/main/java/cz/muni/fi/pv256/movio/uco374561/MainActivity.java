@@ -1,46 +1,56 @@
 package cz.muni.fi.pv256.movio.uco374561;
 
-import android.os.AsyncTask;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.GridView;
-import android.widget.Toast;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import cz.muni.fi.pv256.movio.uco374561.db.Movie;
+
 public class MainActivity extends AppCompatActivity {
     private GridView mGrid;
-    private MyAdapter mAdapter;
+    private List<Movie> mMovies;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        mMovies = new ArrayList<>(41);
+        for (int i = 0; i < 40; i++) {
+            Movie m  = new Movie();
+            m.setCoverPath("cover");
+            m.setTitle("Everest");
+            m.setReleaseDate(i);
+            mMovies.add(m);
+        }
         mGrid = (GridView) findViewById(R.id.movies);
         mGrid.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-                Snackbar.make(view, "EVEREST", Snackbar.LENGTH_LONG).show();;
+                Snackbar.make(view, "EVEREST " + mMovies.get(position).getReleaseDate(), Snackbar.LENGTH_LONG).show();;
                 return false;
             }
         });
-        mGrid.setAdapter(new MyAdapter(getApplicationContext()));
+        mGrid.setAdapter(new MyAdapter(getApplicationContext(), mMovies));
+
+        mGrid.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Intent i = new Intent(getApplicationContext(), DetailActivity.class);
+                i.putExtra("release", mMovies.get(position).getReleaseDate());
+                i.putExtra("title", mMovies.get(position).getTitle());
+                i.putExtra("cover", mMovies.get(position).getCoverPath());
+                startActivity(i);
+            }
+        });
         //old
 //        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
 //        setSupportActionBar(toolbar);
