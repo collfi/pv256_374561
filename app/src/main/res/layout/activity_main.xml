@@ -12,16 +12,24 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context=".MainActivity">
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="20dp"
+        android:text="Opening this week"
+        android:textSize="15sp"
+        android:gravity="center_vertical"
+        android:id="@+id/opening" />
 
     <GridView
         android:id="@+id/movies"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:horizontalSpacing="10dp"
         android:numColumns="3"
+        android:layout_below="@+id/opening"
         android:stretchMode="columnWidth"
         android:gravity="center"
-        android:verticalSpacing="10dp"/>
+        android:verticalSpacing="10dp" />
 
     <ViewStub
         android:id="@android:id/empty"

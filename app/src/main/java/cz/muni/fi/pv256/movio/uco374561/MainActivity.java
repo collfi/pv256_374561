@@ -1,14 +1,19 @@
 package cz.muni.fi.pv256.movio.uco374561;
 
+import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewStub;
 import android.widget.AdapterView;
 import android.widget.GridView;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,6 +28,19 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        ConnectivityManager cm =
+                (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+        boolean isConnected = activeNetwork != null &&
+                activeNetwork.isConnectedOrConnecting();
+
+//        TextView t = (TextView) findViewById(R.id.text_empty);
+//        t.setText((isConnected) ? "No data" : "No connection");
+//
+
+
         mMovies = new ArrayList<>(41);
         for (int i = 0; i < 40; i++) {
             Movie m  = new Movie();
@@ -36,7 +54,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
                 Snackbar.make(view, "EVEREST " + mMovies.get(position).getReleaseDate(), Snackbar.LENGTH_LONG).show();;
-                return false;
+                return true;
             }
         });
         mGrid.setAdapter(new MyAdapter(getApplicationContext(), mMovies));
