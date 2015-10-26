@@ -29,7 +29,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="#000000"
-                    android:scaleType="centerCrop"/>
+                    android:adjustViewBounds="true"/>
 
                 <View
                     android:layout_width="match_parent"
@@ -51,16 +51,17 @@
                         android:id="@+id/cover"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:paddingLeft="15dp"/>
+                        android:paddingLeft="15dp"
+                        android:adjustViewBounds="true"/>
 
-                    <LinearLayout
-                        android:layout_width="fill_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_centerVertical="true"
-                        android:layout_marginLeft="10dp"
-                        android:layout_toRightOf="@+id/cover"
-                        android:gravity="bottom|fill_vertical"
-                        android:orientation="horizontal">
+                    <!--<LinearLayout-->
+                        <!--android:layout_width="fill_parent"-->
+                        <!--android:layout_height="wrap_content"-->
+                        <!--android:layout_centerVertical="true"-->
+                        <!--android:layout_marginLeft="10dp"-->
+                        <!--android:gravity="bottom"-->
+                        <!--android:layout_toRightOf="@+id/cover"-->
+                        <!--android:orientation="horizontal">-->
 
 
                         <TextView
@@ -69,18 +70,21 @@
                             android:layout_height="wrap_content"
                             android:layout_marginLeft="10dp"
                             android:maxLines="3"
-                            android:maxWidth="150dp"
+                            android:layout_centerVertical="true"
+                            android:maxWidth="120dp"
+                            android:text="the martian"
+                            android:layout_toRightOf="@id/cover"
                             android:textSize="25sp"/>
 
                         <TextView
                             android:id="@+id/release_date"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_gravity="bottom"
                             android:layout_marginLeft="10dp"
-                            android:layout_marginRight="10dp"
-                            android:gravity="bottom"/>
-                    </LinearLayout>
+                            android:layout_toRightOf="@+id/title"
+                            android:layout_alignBottom="@+id/title"
+                            android:text="2015"/>
+                    <!--</LinearLayout>-->
 
                 </RelativeLayout>
 
