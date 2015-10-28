@@ -1,4 +1,4 @@
-package cz.muni.fi.pv256.movio.uco374561;
+package cz.muni.fi.pv256.movio.uco374561.adapters;
 
 import android.content.Context;
 import android.util.Log;
@@ -16,7 +16,8 @@ import com.tonicartos.widget.stickygridheaders.StickyGridHeadersBaseAdapter;
 
 import java.util.List;
 
-import cz.muni.fi.pv256.movio.uco374561.db.Movie;
+import cz.muni.fi.pv256.movio.uco374561.R;
+import cz.muni.fi.pv256.movio.uco374561.models.Movie;
 
 /**
  * Created by collfi on 11. 10. 2015.

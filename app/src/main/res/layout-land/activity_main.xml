@@ -11,12 +11,11 @@
         android:id="@+id/grid_fragment"
         android:layout_marginRight="1dp"
         android:name="cz.muni.fi.pv256.movio.uco374561.fragments.GridFragment"/>
-    <fragment
+    <FrameLayout
         android:layout_width="0dp"
         android:layout_weight="1"
         android:layout_marginLeft="10dp"
         android:layout_height="match_parent"
-        android:id="@+id/detail_fragment"
-        android:name="cz.muni.fi.pv256.movio.uco374561.fragments.DetailFragment"/>
+        android:id="@+id/detail_fragment"/>
 
 </LinearLayout>

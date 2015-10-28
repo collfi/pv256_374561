@@ -1,4 +1,4 @@
-package cz.muni.fi.pv256.movio.uco374561.db;
+package cz.muni.fi.pv256.movio.uco374561.models;
 
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -63,6 +63,13 @@ public class Movie implements Parcelable {
 
     public void setOverview(String overview) {
         this.overview = overview;
+    }
+
+    @Override
+    public String toString() {
+        return "Movie{" +
+                "title='" + title + '\'' +
+                '}';
     }
 
     @Override

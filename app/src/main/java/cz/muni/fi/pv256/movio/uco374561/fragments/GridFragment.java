@@ -1,5 +1,7 @@
 package cz.muni.fi.pv256.movio.uco374561.fragments;
 
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -9,7 +11,9 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewStub;
 import android.widget.AdapterView;
+import android.widget.TextView;
 
 import com.tonicartos.widget.stickygridheaders.StickyGridHeadersGridView;
 
@@ -27,10 +31,10 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
 import cz.muni.fi.pv256.movio.uco374561.Constants;
-import cz.muni.fi.pv256.movio.uco374561.MainActivity;
-import cz.muni.fi.pv256.movio.uco374561.MyAdapter;
 import cz.muni.fi.pv256.movio.uco374561.R;
-import cz.muni.fi.pv256.movio.uco374561.db.Movie;
+import cz.muni.fi.pv256.movio.uco374561.activities.MainActivity;
+import cz.muni.fi.pv256.movio.uco374561.adapters.MyAdapter;
+import cz.muni.fi.pv256.movio.uco374561.models.Movie;
 
 /**
  * Created by collfi on 25. 10. 2015.
@@ -41,6 +45,7 @@ public class GridFragment extends Fragment {
     private OnItemSelectedListener l;
     private MyAdapter mAdapter;
     private int mPosition;
+    private TextView mEmpty;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -60,14 +65,6 @@ public class GridFragment extends Fragment {
 
         mGrid = (StickyGridHeadersGridView) view.findViewById(R.id.movies);
         l = (MainActivity) getActivity();
-//        mMovies = new ArrayList<>(41);
-//        for (int i = 0; i < 40; i++) {
-//            Movie m  = new Movie();
-//            m.setCoverPath("cover");
-//            m.setTitle("Everest");
-//            m.setReleaseDate(i);
-//            mMovies.add(m);
-//        }
         mGrid.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
@@ -75,27 +72,32 @@ public class GridFragment extends Fragment {
                 return true;
             }
         });
-//        mGrid.setAdapter(new MyAdapter(getActivity(), mMovies));
 
         mGrid.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 l.onItemSelected(mMovies.get(position));
-//                FragmentManager fm = getFragmentManager();
-//                fm.beginTransaction().add(R.id.grid_fragment, DetailFragment.newInstance(mMovies.
-//                        get(position)), null).addToBackStack("detail").commit();
             }
         });
+        ViewStub empty = (ViewStub) view.findViewById(android.R.id.empty);
+        mEmpty = (TextView) empty.inflate().findViewById(R.id.text_empty);
+        mEmpty.setText("Downloading....");
+        mGrid.setEmptyView(mEmpty);
 
-        if (mMovies.size() == 0) {
+        if (isConnected()) {
+            if (mMovies.size() == 0) {
 //        Just to test the API, will be changed
-            new DownloadNowPlayingImages().execute();
+                new DownloadNowPlayingImages().execute();
+            } else {
+                mAdapter = new MyAdapter(getActivity(), mMovies);
+                mGrid.setAdapter(mAdapter);
+                Log.i("QQQ", "---" + mPosition);
+                mGrid.setSelection(mPosition);
+                mGrid.smoothScrollToPosition(mPosition);
+            }
         } else {
-            mAdapter = new MyAdapter(getActivity(), mMovies);
-            mGrid.setAdapter(mAdapter);
-            Log.i("QQQ", "---" + mPosition);
-            mGrid.setSelection(mPosition);
-            mGrid.smoothScrollToPosition(mPosition);
+            mEmpty.setText("No connection");
+            mGrid.setEmptyView(mEmpty);
         }
         return view;
     }
@@ -222,9 +224,21 @@ public class GridFragment extends Fragment {
 
         @Override
         protected void onPostExecute(MyAdapter adapter) {
-            if (adapter == null) return;
-            mGrid.setAdapter(adapter);
+            if (adapter == null || adapter.getCount() == 0) {
+                mEmpty.setText("No movies");
+                mGrid.setEmptyView(mEmpty);
+            } else {
+                mEmpty.setVisibility(View.GONE);
+                mGrid.setAdapter(adapter);
+            }
         }
+    }
+
+    private boolean isConnected() {
+        ConnectivityManager connectivityManager
+                = (ConnectivityManager) getActivity().getSystemService(getActivity().CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
 
     @Override
@@ -235,6 +249,6 @@ public class GridFragment extends Fragment {
     }
 
     public interface OnItemSelectedListener {
-        public void onItemSelected(Movie m);
+        void onItemSelected(Movie m);
     }
 }

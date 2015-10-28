@@ -8,7 +8,8 @@
     android:layout_height="match_parent"
     android:background="#FFFFFF"
     android:clickable="true"
-    android:layout_gravity="center">
+    android:layout_gravity="center"
+    android:id="@+id/detail_layout">
 
     <ScrollView
         android:layout_width="match_parent"
@@ -83,6 +84,7 @@
                             android:layout_marginLeft="10dp"
                             android:layout_toRightOf="@+id/title"
                             android:layout_alignBottom="@+id/title"
+                            android:layout_centerVertical="true"
                             android:text="2015"/>
                     <!--</LinearLayout>-->
 
@@ -94,6 +96,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_below="@id/main"
+                    android:textSize="15dp"
                     android:layout_marginBottom="10dp"
                     android:layout_marginLeft="10dp"
                     android:layout_marginTop="10dp"
