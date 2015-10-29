@@ -1,5 +1,6 @@
 package cz.muni.fi.pv256.movio.uco374561.activities;
 
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -24,14 +25,11 @@ public class MainActivity extends AppCompatActivity implements GridFragment.OnIt
         setContentView(R.layout.activity_main);
 
 
-        if (findViewById(R.id.detail_fragment) == null) {
+        if (findViewById(R.id.detail_container) == null) {
             mTwoPane = false;
         } else {
             mTwoPane = true;
         }
-
-
-        //todo nic nerobit ked neni internet
 //        ConnectivityManager cm =
 //                (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
 //
@@ -66,11 +64,12 @@ public class MainActivity extends AppCompatActivity implements GridFragment.OnIt
     public void onItemSelected(Movie m) {
         if (mTwoPane) {
             DetailFragment detailFragment = DetailFragment.newInstance(m);
-            getSupportFragmentManager().beginTransaction().replace(R.id.detail_fragment,
+            getSupportFragmentManager().beginTransaction().replace(R.id.detail_container,
             detailFragment).commit();
         } else {
-            getSupportFragmentManager().beginTransaction().add(R.id.grid_fragment,
-                    DetailFragment.newInstance(m), null).addToBackStack("detail").commit();
+            Intent intent = new Intent(this, DetailActivity.class);
+            intent.putExtra("movie", m);
+            startActivity(intent);
         }
 
 
