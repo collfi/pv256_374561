@@ -1,4 +1,9 @@
 <resources>
     <string name="app_name">Movio</string>
     <string name="action_settings">Settings</string>
+    <string name="no_connection">No connection</string>
+    <string name="no_data">No data</string>
+    <string name="downloading">Downloading...</string>
+    <string name="opening">Opening this week</string>
+    <string name="theatres">In theatres now</string>
 </resources>

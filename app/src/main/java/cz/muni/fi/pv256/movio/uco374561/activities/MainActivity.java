@@ -4,11 +4,13 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import java.util.List;
 
+import cz.muni.fi.pv256.movio.uco374561.BuildConfig;
 import cz.muni.fi.pv256.movio.uco374561.R;
 import cz.muni.fi.pv256.movio.uco374561.fragments.DetailFragment;
 import cz.muni.fi.pv256.movio.uco374561.fragments.GridFragment;
@@ -23,6 +25,9 @@ public class MainActivity extends AppCompatActivity implements GridFragment.OnIt
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        if (BuildConfig.logging){
+            Log.i("Logging", "PAID VERSION");
+        }
 
 
         if (findViewById(R.id.detail_container) == null) {

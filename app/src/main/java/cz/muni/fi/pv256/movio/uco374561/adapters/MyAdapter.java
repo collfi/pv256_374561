@@ -98,9 +98,9 @@ public class MyAdapter extends BaseAdapter implements StickyGridHeadersBaseAdapt
         //EDIT YOUR VIEW HEADER HERE
         TextView t = (TextView) convertView.findViewById(R.id.text);
         if (position == 0) {
-            t.setText("Opening this week");
+            t.setText(R.string.opening);
         } else {
-            t.setText("In theatres now");
+            t.setText(R.string.theatres);
         }
 
         return convertView;

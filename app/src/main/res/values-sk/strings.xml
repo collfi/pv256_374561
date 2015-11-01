@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">Movio</string>
+    <string name="action_settings">Nastavania</string>
+    <string name="no_connection">Sieť nedostupná</string>
+    <string name="no_data">Žiadne dáta</string>
+    <string name="downloading">Sťahovanie...</string>
+    <string name="opening">Hrajú tento týždeň</string>
+    <string name="theatres">Práve v kinách</string>
+</resources>

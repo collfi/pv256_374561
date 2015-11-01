@@ -30,7 +30,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
-import cz.muni.fi.pv256.movio.uco374561.Constants;
 import cz.muni.fi.pv256.movio.uco374561.R;
 import cz.muni.fi.pv256.movio.uco374561.activities.MainActivity;
 import cz.muni.fi.pv256.movio.uco374561.adapters.MyAdapter;
@@ -81,7 +80,7 @@ public class GridFragment extends Fragment {
         });
         ViewStub empty = (ViewStub) view.findViewById(android.R.id.empty);
         mEmpty = (TextView) empty.inflate().findViewById(R.id.text_empty);
-        mEmpty.setText("Downloading....");
+        mEmpty.setText(R.string.downloading);
         mGrid.setEmptyView(mEmpty);
 
         if (isConnected()) {
@@ -96,7 +95,7 @@ public class GridFragment extends Fragment {
                 mGrid.smoothScrollToPosition(mPosition);
             }
         } else {
-            mEmpty.setText("No connection");
+            mEmpty.setText(R.string.no_connection);
             mGrid.setEmptyView(mEmpty);
         }
         return view;
@@ -111,7 +110,7 @@ public class GridFragment extends Fragment {
             StringBuilder sb = null;
             String line = null;
             try {
-                URL url = new URL("http://api.themoviedb.org/3/movie/now_playing?api_key=" + Constants.API_KEY);
+                URL url = new URL("http://api.themoviedb.org/3/movie/now_playing?api_key=" + "c331638cd30b7ab8a4b73dedbbb62193");
 
                 HttpURLConnection urlConn = (HttpURLConnection) url.openConnection();
                 urlConn.setDoInput(true);
@@ -168,7 +167,7 @@ public class GridFragment extends Fragment {
             StringBuilder sb2 = null;
             String line2 = null;
             try {
-                URL url = new URL("http://api.themoviedb.org/3/movie/upcoming?api_key=" + Constants.API_KEY);
+                URL url = new URL("http://api.themoviedb.org/3/movie/upcoming?api_key=" + "c331638cd30b7ab8a4b73dedbbb62193");
 
                 HttpURLConnection urlConn = (HttpURLConnection) url.openConnection();
                 urlConn.setDoInput(true);
@@ -225,7 +224,7 @@ public class GridFragment extends Fragment {
         @Override
         protected void onPostExecute(MyAdapter adapter) {
             if (adapter == null || adapter.getCount() == 0) {
-                mEmpty.setText("No movies");
+                mEmpty.setText(R.string.no_data);
                 mGrid.setEmptyView(mEmpty);
             } else {
                 mEmpty.setVisibility(View.GONE);
