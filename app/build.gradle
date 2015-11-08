@@ -33,6 +33,7 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
         debug {
+
             versionNameSuffix ".${VERSION_BUILD}.${defaultConfig.versionCode}"
 
         }
@@ -41,13 +42,13 @@ android {
     productFlavors {
         paid {
             buildConfigField "boolean", "logging", "true"
-            buildConfigField 'String', 'THEME', '"PRIMARY"'
+            buildConfigField "String", "theme", '"primary"'
         } //bude naše default flavor
 
         free {
             buildConfigField "boolean", "logging", "false"
-            buildConfigField 'String', 'THEME', '"SECONDARY"'
-            applicationId "cz.muni.fi.pv256.movio.uco374561.free" //úplně jiný package name
+            buildConfigField "String", "theme", '"secondary"'
+            applicationId "cz.muni.fi.pv256.movio.uco374561.free"
         }
     }
 
