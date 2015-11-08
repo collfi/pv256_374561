@@ -72,7 +72,12 @@ public class MyAdapter extends BaseAdapter implements StickyGridHeadersBaseAdapt
             holder = (ViewHolder) view.getTag();
         }
 //        holder.image.setImageResource(R.drawable.everest);
-        ImageLoader.getInstance().displayImage(mMovies.get(position).getCoverPath(), holder.image, options);
+        if (mMovies.get(position).getCoverPath() == null) {
+            ImageLoader.getInstance().displayImage("drawable://" + R.drawable.everest, holder.image, options);
+
+        } else {
+            ImageLoader.getInstance().displayImage("http://image.tmdb.org/t/p/w342" + mMovies.get(position).getCoverPath(), holder.image, options);
+        }
         return view;
     }
 

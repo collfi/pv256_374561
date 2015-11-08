@@ -59,8 +59,8 @@ public class App extends Application {
         config.writeDebugLogs(); // Remove for release app
 
         config.threadPoolSize(5);
-        config.memoryCache(new LruMemoryCache(10 * 1024 * 1024));
-        config.memoryCacheSize(10 * 1024 * 1024);
+        config.memoryCache(new LruMemoryCache(50 * 1024 * 1024));
+        config.memoryCacheSize(50 * 1024 * 1024);
         config.tasksProcessingOrder(QueueProcessingType.FIFO);
 
 

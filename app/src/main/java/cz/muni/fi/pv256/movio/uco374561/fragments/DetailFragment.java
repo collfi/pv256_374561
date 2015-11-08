@@ -13,8 +13,6 @@ import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.display.SimpleBitmapDisplayer;
 
-import java.util.Calendar;
-
 import cz.muni.fi.pv256.movio.uco374561.R;
 import cz.muni.fi.pv256.movio.uco374561.models.Movie;
 
@@ -89,11 +87,18 @@ public class DetailFragment extends Fragment {
 //            mOverview = (TextView) view.findViewById(R.id.overview);
 //        }
 
-        ImageLoader.getInstance().displayImage(m.getCoverPath(), mCover, options);
-        ImageLoader.getInstance().displayImage(m.getPosterPath(), mPoster, options);
-        Calendar cal = Calendar.getInstance();
-        cal.setTimeInMillis(m.getReleaseDate());
-        mReleaseDate.setText(String.valueOf(cal.get(Calendar.YEAR)));
+        if (m.getCoverPath() == null) {
+            ImageLoader.getInstance().displayImage("drawable://" + R.drawable.everest, mCover, options);
+        } else {
+            ImageLoader.getInstance().displayImage("http://image.tmdb.org/t/p/w342" + m.getCoverPath(), mCover, options);
+        }
+        if (m.getPosterPath() == null) {
+            ImageLoader.getInstance().displayImage("drawable://" + R.drawable.everest2, mPoster, options);
+        } else {
+            ImageLoader.getInstance().displayImage("http://image.tmdb.org/t/p/w1280" + m.getPosterPath(), mPoster, options);
+
+        }
+        mReleaseDate.setText(m.getReleaseDate().substring(0, 4));
         mTitle.setText(m.getTitle());
         mOverview.setText(m.getOverview());
     }

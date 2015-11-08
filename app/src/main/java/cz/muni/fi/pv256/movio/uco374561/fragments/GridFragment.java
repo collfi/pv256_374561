@@ -14,26 +14,23 @@ import android.view.ViewGroup;
 import android.view.ViewStub;
 import android.widget.AdapterView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.google.gson.Gson;
+import com.squareup.okhttp.Call;
+import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.Response;
 import com.tonicartos.widget.stickygridheaders.StickyGridHeadersGridView;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
 import cz.muni.fi.pv256.movio.uco374561.R;
 import cz.muni.fi.pv256.movio.uco374561.activities.MainActivity;
 import cz.muni.fi.pv256.movio.uco374561.adapters.MyAdapter;
 import cz.muni.fi.pv256.movio.uco374561.models.Movie;
+import cz.muni.fi.pv256.movio.uco374561.models.MovieResponse;
 
 /**
  * Created by collfi on 25. 10. 2015.
@@ -105,118 +102,76 @@ public class GridFragment extends Fragment {
     public class DownloadNowPlayingImages extends AsyncTask<Void, Void, MyAdapter> {
         @Override
         protected MyAdapter doInBackground(Void... params) {
-            Log.i("QQQ", "Downloading");
-            BufferedReader rd = null;
-            StringBuilder sb = null;
-            String line = null;
+            Response response = null;
+            String nextWeek = null;
+            String inTheatres = null;
             try {
-                URL url = new URL("http://api.themoviedb.org/3/movie/now_playing?api_key=" + "c331638cd30b7ab8a4b73dedbbb62193");
+                final OkHttpClient client = new OkHttpClient();
+                Request request = new Request.Builder()
+                        .url("http://api.themoviedb.org/3/discover/movie?primary_release_date.gte=2015-11-09&primary_release_date.lte=2015-11-16&sort_by=avg_rating.desc&api_key=" + "c331638cd30b7ab8a4b73dedbbb62193")
+                        .build();
+                Call call = client.newCall(request);
+                response = call.execute();
+                if (!response.isSuccessful()) {
+                    throw new IOException("Unexpected code " + response);
+                }
+                nextWeek = response.body().string();
 
-                HttpURLConnection urlConn = (HttpURLConnection) url.openConnection();
-                urlConn.setDoInput(true);
-                urlConn.setUseCaches(false);
-                urlConn.setRequestMethod("GET");
-                urlConn.setRequestProperty("Content-Type", "application/json");
-                urlConn.connect();
+                request = new Request.Builder()
+                        .url("http://api.themoviedb.org/3/movie/now_playing?api_key=" + "c331638cd30b7ab8a4b73dedbbb62193")
+                        .build();
+                call = client.newCall(request);
+                response = call.execute();
+                if (!response.isSuccessful()) {
+                    throw new IOException("Unexpected code " + response);
+                }
+                inTheatres = response.body().string();
 
-                rd = new BufferedReader(new InputStreamReader(urlConn.getInputStream(), "UTF-8"));
-                sb = new StringBuilder();
-
-                line = rd.readLine();
-                sb.append(line);
             } catch (IOException ioe) {
                 Log.e("http", "url IOException");
+                Toast.makeText(getActivity(), "Error while parsing downloaded data", Toast.LENGTH_LONG).show();
             }
-            String data = sb.toString();
-            try {
-                JSONObject j = new JSONObject(data);
-                JSONArray ja = j.getJSONArray("results");
-                for (int i = 0; i < ja.length(); i++) {
-                    Movie m = new Movie();
-                    m.setTitle(ja.getJSONObject(i).getString("original_title"));
-                    m.setOverview(ja.getJSONObject(i).getString("overview"));
-                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-                    m.setReleaseDate(sdf.parse(ja.getJSONObject(i).getString("release_date")).getTime());
-                    String path = ja.getJSONObject(i).getString("poster_path");
-                    if (path.equals("null")) {
-                        path = "drawable://" + R.drawable.everest;
-                        m.setCoverPath(path);
-                    } else {
-                        m.setCoverPath("http://image.tmdb.org/t/p/w342" + path);
-                    }
-                    path = ja.getJSONObject(i).getString("backdrop_path");
-                    if (path.equals("null")) {
-                        path = "drawable://" + R.drawable.everest2;
-                        m.setPosterPath(path);
-                    } else {
-                        m.setPosterPath("http://image.tmdb.org/t/p/w1280" + path);
-                    }
-                    mMovies.add(m);
-                }
+            Gson gson = new Gson();
+            MovieResponse res = gson.fromJson(nextWeek, MovieResponse.class);
+            mMovies.addAll(res.results);
+            res = gson.fromJson(inTheatres, MovieResponse.class);
+            mMovies.addAll(res.results);
+
+//            try {
+//                JSONObject j = new JSONObject(inTheatres);
+//                JSONArray ja = j.getJSONArray("results");
+//                for (int i = 0; i < ja.length(); i++) {
+//
+//                    GsonBuilder builder = new GsonBuilder();
+//                    Gson gson = builder.create();
+//                    Movie m = gson.fro
+////                    m.setTitle(ja.getJSONObject(i).getString("original_title"));
+////                    m.setOverview(ja.getJSONObject(i).getString("overview"));
+////                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+////                    m.setReleaseDate(sdf.parse(ja.getJSONObject(i).getString("release_date")).getTime());
+////                    String path = ja.getJSONObject(i).getString("poster_path");
+////                    if (path.equals("null")) {
+////                        path = "drawable://" + R.drawable.everest;
+////                        m.setCoverPath(path);
+////                    } else {
+////                        m.setCoverPath("http://image.tmdb.org/t/p/w342" + path);
+////                    }
+////                    path = ja.getJSONObject(i).getString("backdrop_path");
+////                    if (path.equals("null")) {
+////                        path = "drawable://" + R.drawable.everest2;
+////                        m.setPosterPath(path);
+////                    } else {
+////                        m.setPosterPath("http://image.tmdb.org/t/p/w1280" + path);
+////                    }
+//                    mMovies.add(m);
+//                }
 
 
-            } catch (JSONException je) {
-                Log.e("adapter", "creating adapter error");
-            } catch (ParseException pa) {
-                Log.e("format", "date format exception");
-            }
-
-
-            ///
-            BufferedReader rd2 = null;
-            StringBuilder sb2 = null;
-            String line2 = null;
-            try {
-                URL url = new URL("http://api.themoviedb.org/3/movie/upcoming?api_key=" + "c331638cd30b7ab8a4b73dedbbb62193");
-
-                HttpURLConnection urlConn = (HttpURLConnection) url.openConnection();
-                urlConn.setDoInput(true);
-                urlConn.setUseCaches(false);
-                urlConn.setRequestMethod("GET");
-                urlConn.setRequestProperty("Content-Type", "application/json");
-                urlConn.connect();
-
-                rd2 = new BufferedReader(new InputStreamReader(urlConn.getInputStream(), "UTF-8"));
-                sb2 = new StringBuilder();
-
-                line2 = rd2.readLine();
-                sb2.append(line2);
-            } catch (IOException ioe) {
-                Log.e("http", "url IOException");
-            }
-            String data2 = sb.toString();
-            try {
-                JSONObject j = new JSONObject(data2);
-                JSONArray ja = j.getJSONArray("results");
-                for (int i = 0; i < ja.length(); i++) {
-                    Movie m = new Movie();
-                    m.setTitle(ja.getJSONObject(i).getString("original_title"));
-                    m.setOverview(ja.getJSONObject(i).getString("overview"));
-                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-                    m.setReleaseDate(sdf.parse(ja.getJSONObject(i).getString("release_date")).getTime());
-                    String path = ja.getJSONObject(i).getString("poster_path");
-                    if (path.equals("null")) {
-                        path = "drawable://" + R.drawable.everest;
-                        m.setCoverPath(path);
-                    } else {
-                        m.setCoverPath("http://image.tmdb.org/t/p/w342" + path);
-                    }
-                    path = ja.getJSONObject(i).getString("backdrop_path");
-                    if (path.equals("null")) {
-                        path = "drawable://" + R.drawable.everest2;
-                        m.setPosterPath(path);
-                    } else {
-                        m.setPosterPath("http://image.tmdb.org/t/p/w1280" + path);
-                    }
-                    mMovies.add(m);
-                }
-
-
-            } catch (JSONException je) {
-                Log.e("adapter", "creating adapter error");
-            } catch (ParseException pa) {
-                Log.e("format", "date format exception");
-            }
+//            } catch (JSONException je) {
+//                Log.e("adapter", "creating adapter error");
+//            } catch (ParseException pa) {
+//                Log.e("format", "date format exception");
+//            }
             mAdapter = new MyAdapter(getActivity(), mMovies);
             return mAdapter;
         }
