@@ -102,7 +102,7 @@ public class GridFragment extends Fragment {
     public class DownloadNowPlayingImages extends AsyncTask<Void, Void, MyAdapter> {
         @Override
         protected MyAdapter doInBackground(Void... params) {
-            Response response = null;
+            Response response;
             String nextWeek = null;
             String inTheatres = null;
             try {
@@ -178,6 +178,7 @@ public class GridFragment extends Fragment {
 
         @Override
         protected void onPostExecute(MyAdapter adapter) {
+            if (mGrid == null) return;
             if (adapter == null || adapter.getCount() == 0) {
                 mEmpty.setText(R.string.no_data);
                 mGrid.setEmptyView(mEmpty);

@@ -27,6 +27,7 @@ public class MyAdapter extends BaseAdapter implements StickyGridHeadersBaseAdapt
     private LayoutInflater inflater;
     private List<Movie> mMovies;
     private DisplayImageOptions options;
+    public static final int[] headers = {R.string.opening, R.string.theatres};
 
     public MyAdapter(Context context, List<Movie> list) {
         inflater = LayoutInflater.from(context);
@@ -102,11 +103,7 @@ public class MyAdapter extends BaseAdapter implements StickyGridHeadersBaseAdapt
         }
         //EDIT YOUR VIEW HEADER HERE
         TextView t = (TextView) convertView.findViewById(R.id.text);
-        if (position == 0) {
-            t.setText(R.string.opening);
-        } else {
-            t.setText(R.string.theatres);
-        }
+        t.setText(headers[position]);
 
         return convertView;
     }

@@ -42,12 +42,10 @@ android {
     productFlavors {
         paid {
             buildConfigField "boolean", "logging", "true"
-            buildConfigField "String", "theme", '"primary"'
         } //bude naše default flavor
 
         free {
             buildConfigField "boolean", "logging", "false"
-            buildConfigField "String", "theme", '"secondary"'
             applicationId "cz.muni.fi.pv256.movio.uco374561.free"
         }
     }
