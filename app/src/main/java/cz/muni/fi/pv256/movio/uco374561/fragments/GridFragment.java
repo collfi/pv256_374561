@@ -1,5 +1,7 @@
 package cz.muni.fi.pv256.movio.uco374561.fragments;
 
+import android.app.IntentService;
+import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
@@ -31,6 +33,8 @@ import cz.muni.fi.pv256.movio.uco374561.activities.MainActivity;
 import cz.muni.fi.pv256.movio.uco374561.adapters.MyAdapter;
 import cz.muni.fi.pv256.movio.uco374561.models.Movie;
 import cz.muni.fi.pv256.movio.uco374561.models.MovieResponse;
+import retrofit.http.GET;
+import retrofit.http.Path;
 
 /**
  * Created by collfi on 25. 10. 2015.
@@ -205,5 +209,16 @@ public class GridFragment extends Fragment {
 
     public interface OnItemSelectedListener {
         void onItemSelected(Movie m);
+    }
+
+    public class DownloadService extends IntentService {
+        @Override
+        protected void onHandleIntent(Intent intent) {
+
+        }
+
+        public DownloadService() {
+            super("DownloadService");
+        }
     }
 }
