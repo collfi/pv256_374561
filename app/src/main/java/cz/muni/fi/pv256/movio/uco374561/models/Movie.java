@@ -60,6 +60,17 @@ public class Movie implements Parcelable {
     public Movie() {
     }
 
+    @Override
+    public String toString() {
+        return "Movie{" +
+                "coverPath='" + coverPath + '\'' +
+                ", title='" + title + '\'' +
+                ", releaseDate='" + releaseDate + '\'' +
+                ", posterPath='" + posterPath + '\'' +
+                ", overview='" + overview + '\'' +
+                '}';
+    }
+
     protected Movie(Parcel in) {
         this.coverPath = in.readString();
         this.title = in.readString();
