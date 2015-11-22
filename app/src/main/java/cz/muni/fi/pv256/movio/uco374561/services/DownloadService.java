@@ -5,6 +5,7 @@ import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Intent;
+import android.media.RingtoneManager;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -80,6 +81,7 @@ public class DownloadService extends IntentService {
                 .setContentTitle("Chyba pri ziskavani filmov")
                 .setContentText(error)
                 .setSmallIcon(android.R.drawable.btn_star)
+                .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
                 .getNotification();
 
         NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);

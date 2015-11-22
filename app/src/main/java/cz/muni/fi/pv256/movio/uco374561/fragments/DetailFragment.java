@@ -1,7 +1,10 @@
 package cz.muni.fi.pv256.movio.uco374561.fragments;
 
+import android.content.ContentValues;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,6 +17,8 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.display.SimpleBitmapDisplayer;
 
 import cz.muni.fi.pv256.movio.uco374561.R;
+import cz.muni.fi.pv256.movio.uco374561.db.MovieContract;
+import cz.muni.fi.pv256.movio.uco374561.db.MovieDbHelper;
 import cz.muni.fi.pv256.movio.uco374561.models.Movie;
 
 /**
@@ -27,7 +32,33 @@ public class DetailFragment extends Fragment {
     private TextView mReleaseDate;
     private TextView mTitle;
     private TextView mOverview;
+    private FloatingActionButton mAdd;
+    private SQLiteDatabase mDb;
     private View v;
+    private Movie mCurrentMovie;
+    private View.OnClickListener mAddListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            ContentValues cv = new ContentValues();
+            cv.put(MovieContract.MovieEntry.COLUMN_NAME_COVER, "http://image.tmdb.org/t/p/w342" + mCurrentMovie.getCoverPath());
+            cv.put(MovieContract.MovieEntry.COLUMN_NAME_POSTER, "http://image.tmdb.org/t/p/w1280" + mCurrentMovie.getPosterPath());
+            cv.put(MovieContract.MovieEntry.COLUMN_NAME_OVERVIEW, mCurrentMovie.getOverview());
+            cv.put(MovieContract.MovieEntry.COLUMN_NAME_RELEASE_DATE, mCurrentMovie.getReleaseDate());
+            cv.put(MovieContract.MovieEntry.COLUMN_NAME_TITLE, mCurrentMovie.getTitle());
+            mDb.insert(MovieContract.MovieEntry.TABLE_NAME, null, cv);
+            mAdd.setImageResource(R.drawable.ic_remove_white_24dp);
+            v.setOnClickListener(mRemoveListener);
+        }
+    };
+    private View.OnClickListener mRemoveListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            mDb.delete(MovieContract.MovieEntry.TABLE_NAME, MovieContract.MovieEntry.COLUMN_NAME_TITLE
+                    + " = " + mCurrentMovie.getTitle(), null);
+            mAdd.setImageResource(R.drawable.ic_add_white_24dp);
+            v.setOnClickListener(mAddListener);
+        }
+    };
 
     public static DetailFragment newInstance(Movie m) {
         DetailFragment fragment = new DetailFragment();
@@ -52,6 +83,7 @@ public class DetailFragment extends Fragment {
         if (getArguments() != null) {
             mMovie = getArguments().getParcelable("movie");
         }
+        mDb = new MovieDbHelper(getActivity()).getWritableDatabase();
 
     }
 
@@ -64,6 +96,8 @@ public class DetailFragment extends Fragment {
         mReleaseDate = (TextView) v.findViewById(R.id.release_date);
         mTitle = (TextView) v.findViewById(R.id.title);
         mOverview = (TextView) v.findViewById(R.id.overview);
+        mAdd = (FloatingActionButton) v.findViewById(R.id.add);
+
         return v;
     }
 
@@ -76,17 +110,9 @@ public class DetailFragment extends Fragment {
         }
     }
 
-    public void update(Movie m) {
-//        if (mCover == null) {
-//            View view = inflater.inflate(R.layout.fragment_detail, container, false);
-//            Log.i("QQQ", "oncreate view " + mMovie);
-//            mPoster = (ImageView) view.findViewById(R.id.poster);
-//            mCover = (ImageView) view.findViewById(R.id.cover);
-//            mReleaseDate = (TextView) view.findViewById(R.id.release_date);
-//            mTitle = (TextView) view.findViewById(R.id.title);
-//            mOverview = (TextView) view.findViewById(R.id.overview);
-//        }
-
+    public void update(final Movie m) {
+        //todo check db for movie and set the icon!!
+        mCurrentMovie = m;
         if (m.getCoverPath() == null) {
             ImageLoader.getInstance().displayImage("drawable://" + R.drawable.everest, mCover, options);
         } else {
@@ -98,14 +124,28 @@ public class DetailFragment extends Fragment {
             ImageLoader.getInstance().displayImage("http://image.tmdb.org/t/p/w1280" + m.getPosterPath(), mPoster, options);
 
         }
-        mReleaseDate.setText(m.getReleaseDate().substring(0, 4));
+        mReleaseDate.setText(m.getReleaseDate());
         mTitle.setText(m.getTitle());
         mOverview.setText(m.getOverview());
+
+        mAdd.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
+
     }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putParcelable("movie", mMovie);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        mDb.close();
     }
 }

@@ -17,7 +17,15 @@ import cz.muni.fi.pv256.movio.uco374561.fragments.GridFragment;
 import cz.muni.fi.pv256.movio.uco374561.models.Movie;
 
 public class MainActivity extends AppCompatActivity implements GridFragment.OnItemSelectedListener {
+ /* ask
+ loader - get data
+ zmena zdroja v myAdapteri v GridFragmente z MainActivity
+ test? co testovat, staci pridat vymazat...?
 
+
+
+
+  */
     private List<Movie> mMovies;
     private boolean mTwoPane;
 
@@ -112,7 +120,11 @@ public class MainActivity extends AppCompatActivity implements GridFragment.OnIt
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        if (id == R.id.favorites) {
+            return true;
+        }
+
+        if (id == R.id.discover) {
             return true;
         }
 

@@ -31,7 +31,7 @@ import cz.muni.fi.pv256.movio.uco374561.services.DownloadService;
 /**
  * Created by collfi on 25. 10. 2015.
  */
-public class GridFragment extends Fragment  {
+public class GridFragment extends Fragment {
     private StickyGridHeadersGridView mGrid;
     private ArrayList<Movie> mMovies;
     private OnItemSelectedListener l;
@@ -75,28 +75,28 @@ public class GridFragment extends Fragment  {
         });
         ViewStub empty = (ViewStub) view.findViewById(android.R.id.empty);
         mEmpty = (TextView) empty.inflate().findViewById(R.id.text_empty);
-        mEmpty.setText(R.string.downloading);
+//        mEmpty.setText(R.string.downloading);
         mGrid.setEmptyView(mEmpty);
 
-        if (isConnected()) {
-            if (mMovies.size() == 0) {
+//        if (isConnected()) {
+        if (mMovies.size() == 0) {
 //        Just to test the API, will be changed
 //                new DownloadNowPlayingImages().execute();
 
-                Intent i = new Intent(getActivity(), DownloadService.class);
-                getActivity().startService(i);
+            Intent i = new Intent(getActivity(), DownloadService.class);
+            getActivity().startService(i);
 
-            } else {
-                mAdapter = new MyAdapter(getActivity(), mMovies);
-                mGrid.setAdapter(mAdapter);
-                Log.i("QQQ", "---" + mPosition);
-                mGrid.setSelection(mPosition);
-                mGrid.smoothScrollToPosition(mPosition);
-            }
         } else {
-            mEmpty.setText(R.string.no_connection);
-            mGrid.setEmptyView(mEmpty);
+            mAdapter = new MyAdapter(getActivity(), mMovies);
+            mGrid.setAdapter(mAdapter);
+            Log.i("QQQ", "---" + mPosition);
+            mGrid.setSelection(mPosition);
+            mGrid.smoothScrollToPosition(mPosition);
         }
+//        } else {
+//            mEmpty.setText(R.string.no_connection);
+//            mGrid.setEmptyView(mEmpty);
+//        }
         return view;
     }
 
