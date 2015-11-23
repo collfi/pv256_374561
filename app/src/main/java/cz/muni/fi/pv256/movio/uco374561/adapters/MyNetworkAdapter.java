@@ -22,14 +22,14 @@ import cz.muni.fi.pv256.movio.uco374561.models.Movie;
 /**
  * Created by collfi on 11. 10. 2015.
  */
-public class MyAdapter extends BaseAdapter implements StickyGridHeadersBaseAdapter{
+public class MyNetworkAdapter extends BaseAdapter implements StickyGridHeadersBaseAdapter{
 
     private LayoutInflater inflater;
     private List<Movie> mMovies;
     private DisplayImageOptions options;
     public static final int[] headers = {R.string.opening, R.string.theatres};
 
-    public MyAdapter(Context context, List<Movie> list) {
+    public MyNetworkAdapter(Context context, List<Movie> list) {
         inflater = LayoutInflater.from(context);
         Log.i("QQQ", list.size() + "---" );
         mMovies = list;

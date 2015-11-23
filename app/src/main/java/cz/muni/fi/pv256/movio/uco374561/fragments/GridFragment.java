@@ -12,6 +12,9 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewStub;
@@ -24,7 +27,8 @@ import java.util.ArrayList;
 
 import cz.muni.fi.pv256.movio.uco374561.R;
 import cz.muni.fi.pv256.movio.uco374561.activities.MainActivity;
-import cz.muni.fi.pv256.movio.uco374561.adapters.MyAdapter;
+import cz.muni.fi.pv256.movio.uco374561.adapters.MyDbAdapter;
+import cz.muni.fi.pv256.movio.uco374561.adapters.MyNetworkAdapter;
 import cz.muni.fi.pv256.movio.uco374561.models.Movie;
 import cz.muni.fi.pv256.movio.uco374561.services.DownloadService;
 
@@ -32,10 +36,15 @@ import cz.muni.fi.pv256.movio.uco374561.services.DownloadService;
  * Created by collfi on 25. 10. 2015.
  */
 public class GridFragment extends Fragment {
+    public static final int NETWORK = 0;
+    public static final int DB = 1;
+    private int adapter;
     private StickyGridHeadersGridView mGrid;
     private ArrayList<Movie> mMovies;
     private OnItemSelectedListener l;
-    private MyAdapter mAdapter;
+    private MyNetworkAdapter mNetworkAdapter;
+    private MyDbAdapter mDbAdapter;
+
     private int mPosition;
     private TextView mEmpty;
 
@@ -48,6 +57,7 @@ public class GridFragment extends Fragment {
             mMovies = savedInstanceState.getParcelableArrayList("list");
             mPosition = savedInstanceState.getInt("position");
         }
+        setHasOptionsMenu(true);
         getActivity().registerReceiver(dataReceiver, new IntentFilter("cz.muni.fi.movio"));
 
     }
@@ -82,13 +92,13 @@ public class GridFragment extends Fragment {
         if (mMovies.size() == 0) {
 //        Just to test the API, will be changed
 //                new DownloadNowPlayingImages().execute();
-
+            adapter = NETWORK;
             Intent i = new Intent(getActivity(), DownloadService.class);
             getActivity().startService(i);
 
         } else {
-            mAdapter = new MyAdapter(getActivity(), mMovies);
-            mGrid.setAdapter(mAdapter);
+            mNetworkAdapter = new MyNetworkAdapter(getActivity(), mMovies);
+            mGrid.setAdapter(mNetworkAdapter);
             Log.i("QQQ", "---" + mPosition);
             mGrid.setSelection(mPosition);
             mGrid.smoothScrollToPosition(mPosition);
@@ -101,9 +111,9 @@ public class GridFragment extends Fragment {
     }
 
 
-//    public class DownloadNowPlayingImages extends AsyncTask<Void, Void, MyAdapter> {
+//    public class DownloadNowPlayingImages extends AsyncTask<Void, Void, MyNetworkAdapter> {
 //        @Override
-//        protected MyAdapter doInBackground(Void... params) {
+//        protected MyNetworkAdapter doInBackground(Void... params) {
 //            Response response;
 //            String nextWeek = null;
 //            String inTheatres = null;
@@ -174,12 +184,12 @@ public class GridFragment extends Fragment {
 ////            } catch (ParseException pa) {
 ////                Log.e("format", "date format exception");
 ////            }
-//            mAdapter = new MyAdapter(getActivity(), mMovies);
-//            return mAdapter;
+//            mNetworkAdapter = new MyNetworkAdapter(getActivity(), mMovies);
+//            return mNetworkAdapter;
 //        }
 //
 //        @Override
-//        protected void onPostExecute(MyAdapter adapter) {
+//        protected void onPostExecute(MyNetworkAdapter adapter) {
 //            if (mGrid == null) return;
 //            if (adapter == null || adapter.getCount() == 0) {
 //                mEmpty.setText(R.string.no_data);
@@ -213,9 +223,49 @@ public class GridFragment extends Fragment {
         @Override
         public void onReceive(Context context, Intent intent) {
             mMovies = intent.getParcelableArrayListExtra("movies");
-            mAdapter = new MyAdapter(getActivity(), mMovies);
-            mGrid.setAdapter(mAdapter);
+            mNetworkAdapter = new MyNetworkAdapter(getActivity(), mMovies);
+            mDbAdapter = new MyDbAdapter(getActivity(), mMovies);
+            mGrid.setAdapter(mNetworkAdapter);
         }
     };
 
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        Log.i(" QQQ", "on create options menu");
+
+        if (adapter == NETWORK) {
+            inflater.inflate(R.menu.menu_favorites, menu);
+        }
+        if (adapter == DB) {
+            inflater.inflate(R.menu.menu_discover, menu);
+        }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        Log.i(" QQQ", "options menu selected");
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.favorites) {
+            mGrid.setAdapter(mDbAdapter);
+            adapter = DB;
+            Log.i(" QQQ", "click favorites");
+            getActivity().supportInvalidateOptionsMenu();
+            return true;
+        }
+
+        if (id == R.id.discover) {
+            mGrid.setAdapter(mNetworkAdapter);
+            adapter = NETWORK;
+            Log.i(" QQQ", "click discover");
+
+            getActivity().supportInvalidateOptionsMenu();
+            return true;
+
+
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
 }
