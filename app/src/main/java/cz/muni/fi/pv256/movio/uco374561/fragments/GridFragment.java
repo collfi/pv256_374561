@@ -30,7 +30,9 @@ import cz.muni.fi.pv256.movio.uco374561.activities.MainActivity;
 import cz.muni.fi.pv256.movio.uco374561.adapters.MyDbAdapter;
 import cz.muni.fi.pv256.movio.uco374561.adapters.MyNetworkAdapter;
 import cz.muni.fi.pv256.movio.uco374561.models.Movie;
+import cz.muni.fi.pv256.movio.uco374561.providers.MovieManager;
 import cz.muni.fi.pv256.movio.uco374561.services.DownloadService;
+import cz.muni.fi.pv256.movio.uco374561.sync.MovieSyncAdapter;
 
 /**
  * Created by collfi on 25. 10. 2015.
@@ -40,7 +42,8 @@ public class GridFragment extends Fragment {
     public static final int DB = 1;
     private int adapter;
     private StickyGridHeadersGridView mGrid;
-    private ArrayList<Movie> mMovies;
+    private ArrayList<Movie> mNetworkMovies;
+    private ArrayList<Movie> mDbMovies;
     private OnItemSelectedListener l;
     private MyNetworkAdapter mNetworkAdapter;
     private MyDbAdapter mDbAdapter;
@@ -52,14 +55,19 @@ public class GridFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (savedInstanceState == null) {
-            mMovies = new ArrayList<>();
+            mNetworkMovies = new ArrayList<>();
         } else {
-            mMovies = savedInstanceState.getParcelableArrayList("list");
+            mNetworkMovies = savedInstanceState.getParcelableArrayList("list");
             mPosition = savedInstanceState.getInt("position");
         }
         setHasOptionsMenu(true);
         getActivity().registerReceiver(dataReceiver, new IntentFilter("cz.muni.fi.movio"));
+        //todo asynctask
+        MovieManager manager = new MovieManager(getActivity());
+        mDbMovies = manager.getAll();
 
+        mDbAdapter = new MyDbAdapter(getActivity(), mDbMovies);
+        //refresh pri pridani
     }
 
     @Nullable
@@ -72,7 +80,7 @@ public class GridFragment extends Fragment {
         mGrid.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-                Snackbar.make(view, mMovies.get(position).getTitle(), Snackbar.LENGTH_LONG).show();
+                Snackbar.make(view, mNetworkMovies.get(position).getTitle(), Snackbar.LENGTH_LONG).show();
                 return true;
             }
         });
@@ -80,7 +88,7 @@ public class GridFragment extends Fragment {
         mGrid.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                l.onItemSelected(mMovies.get(position));
+                l.onItemSelected(mNetworkMovies.get(position));
             }
         });
         ViewStub empty = (ViewStub) view.findViewById(android.R.id.empty);
@@ -89,7 +97,7 @@ public class GridFragment extends Fragment {
         mGrid.setEmptyView(mEmpty);
 
 //        if (isConnected()) {
-        if (mMovies.size() == 0) {
+        if (mNetworkMovies.size() == 0) {
 //        Just to test the API, will be changed
 //                new DownloadNowPlayingImages().execute();
             adapter = NETWORK;
@@ -97,7 +105,7 @@ public class GridFragment extends Fragment {
             getActivity().startService(i);
 
         } else {
-            mNetworkAdapter = new MyNetworkAdapter(getActivity(), mMovies);
+            mNetworkAdapter = new MyNetworkAdapter(getActivity(), mNetworkMovies);
             mGrid.setAdapter(mNetworkAdapter);
             Log.i("QQQ", "---" + mPosition);
             mGrid.setSelection(mPosition);
@@ -110,97 +118,6 @@ public class GridFragment extends Fragment {
         return view;
     }
 
-
-//    public class DownloadNowPlayingImages extends AsyncTask<Void, Void, MyNetworkAdapter> {
-//        @Override
-//        protected MyNetworkAdapter doInBackground(Void... params) {
-//            Response response;
-//            String nextWeek = null;
-//            String inTheatres = null;
-//            try {
-//                final OkHttpClient client = new OkHttpClient();
-//                Request request = new Request.Builder()
-//                        .url("http://api.themoviedb.org/3/discover/movie?primary_release_date.gte=2015-11-09&primary_release_date.lte=2015-11-16&sort_by=avg_rating.desc&api_key=" + "c331638cd30b7ab8a4b73dedbbb62193")
-//                        .build();
-//                Call call = client.newCall(request);
-//                response = call.execute();
-//                if (!response.isSuccessful()) {
-//                    throw new IOException("Unexpected code " + response);
-//                }
-//                nextWeek = response.body().string();
-//
-//                request = new Request.Builder()
-//                        .url("http://api.themoviedb.org/3/movie/now_playing?api_key=" + "c331638cd30b7ab8a4b73dedbbb62193")
-//                        .build();
-//                call = client.newCall(request);
-//                response = call.execute();
-//                if (!response.isSuccessful()) {
-//                    throw new IOException("Unexpected code " + response);
-//                }
-//                inTheatres = response.body().string();
-//
-//            } catch (IOException ioe) {
-//                Log.e("http", "url IOException");
-//                Toast.makeText(getActivity(), "Error while parsing downloaded data", Toast.LENGTH_LONG).show();
-//            }
-//            Gson gson = new Gson();
-//            MovieResponse res = gson.fromJson(nextWeek, MovieResponse.class);
-//            mMovies.addAll(res.results);
-//            res = gson.fromJson(inTheatres, MovieResponse.class);
-//            mMovies.addAll(res.results);
-//
-////            try {
-////                JSONObject j = new JSONObject(inTheatres);
-////                JSONArray ja = j.getJSONArray("results");
-////                for (int i = 0; i < ja.length(); i++) {
-////
-////                    GsonBuilder builder = new GsonBuilder();
-////                    Gson gson = builder.create();
-////                    Movie m = gson.fro
-//////                    m.setTitle(ja.getJSONObject(i).getString("original_title"));
-//////                    m.setOverview(ja.getJSONObject(i).getString("overview"));
-//////                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-//////                    m.setReleaseDate(sdf.parse(ja.getJSONObject(i).getString("release_date")).getTime());
-//////                    String path = ja.getJSONObject(i).getString("poster_path");
-//////                    if (path.equals("null")) {
-//////                        path = "drawable://" + R.drawable.everest;
-//////                        m.setCoverPath(path);
-//////                    } else {
-//////                        m.setCoverPath("http://image.tmdb.org/t/p/w342" + path);
-//////                    }
-//////                    path = ja.getJSONObject(i).getString("backdrop_path");
-//////                    if (path.equals("null")) {
-//////                        path = "drawable://" + R.drawable.everest2;
-//////                        m.setPosterPath(path);
-//////                    } else {
-//////                        m.setPosterPath("http://image.tmdb.org/t/p/w1280" + path);
-//////                    }
-////                    mMovies.add(m);
-////                }
-//
-//
-////            } catch (JSONException je) {
-////                Log.e("adapter", "creating adapter error");
-////            } catch (ParseException pa) {
-////                Log.e("format", "date format exception");
-////            }
-//            mNetworkAdapter = new MyNetworkAdapter(getActivity(), mMovies);
-//            return mNetworkAdapter;
-//        }
-//
-//        @Override
-//        protected void onPostExecute(MyNetworkAdapter adapter) {
-//            if (mGrid == null) return;
-//            if (adapter == null || adapter.getCount() == 0) {
-//                mEmpty.setText(R.string.no_data);
-//                mGrid.setEmptyView(mEmpty);
-//            } else {
-//                mEmpty.setVisibility(View.GONE);
-//                mGrid.setAdapter(adapter);
-//            }
-//        }
-//    }
-
     private boolean isConnected() {
         ConnectivityManager connectivityManager
                 = (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -211,7 +128,11 @@ public class GridFragment extends Fragment {
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putParcelableArrayList("list", mMovies);
+        if (adapter == NETWORK) {
+            outState.putParcelableArrayList("list", mNetworkMovies);
+        } else {
+            outState.putParcelableArrayList("list", mDbMovies);
+        }
         outState.putInt("position", mGrid.getFirstVisiblePosition());
     }
 
@@ -222,9 +143,8 @@ public class GridFragment extends Fragment {
     private BroadcastReceiver dataReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            mMovies = intent.getParcelableArrayListExtra("movies");
-            mNetworkAdapter = new MyNetworkAdapter(getActivity(), mMovies);
-            mDbAdapter = new MyDbAdapter(getActivity(), mMovies);
+            mNetworkMovies = intent.getParcelableArrayListExtra("movies");
+            mNetworkAdapter = new MyNetworkAdapter(getActivity(), mNetworkMovies);
             mGrid.setAdapter(mNetworkAdapter);
         }
     };
@@ -243,27 +163,39 @@ public class GridFragment extends Fragment {
     }
 
     @Override
+    public void onDestroy() {
+        super.onDestroy();
+        getActivity().unregisterReceiver(dataReceiver);
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         Log.i(" QQQ", "options menu selected");
         //noinspection SimplifiableIfStatement
         if (id == R.id.favorites) {
+            Log.i("zzzz", mGrid + " - " + mDbAdapter + " - " + mDbAdapter.getCount());
             mGrid.setAdapter(mDbAdapter);
             adapter = DB;
+
             Log.i(" QQQ", "click favorites");
             getActivity().supportInvalidateOptionsMenu();
             return true;
         }
 
         if (id == R.id.discover) {
+            if (mNetworkAdapter == null) {
+                mNetworkAdapter = new MyNetworkAdapter(getActivity(), new ArrayList<Movie>());
+            }
             mGrid.setAdapter(mNetworkAdapter);
             adapter = NETWORK;
             Log.i(" QQQ", "click discover");
 
             getActivity().supportInvalidateOptionsMenu();
             return true;
-
-
+        }
+        if (id == R.id.sync) {
+            MovieSyncAdapter.syncImmediately(getActivity());
         }
 
         return super.onOptionsItemSelected(item);

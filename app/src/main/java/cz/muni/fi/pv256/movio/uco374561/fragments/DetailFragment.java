@@ -1,11 +1,10 @@
 package cz.muni.fi.pv256.movio.uco374561.fragments;
 
-import android.content.ContentValues;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,9 +16,8 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.display.SimpleBitmapDisplayer;
 
 import cz.muni.fi.pv256.movio.uco374561.R;
-import cz.muni.fi.pv256.movio.uco374561.db.MovieContract;
-import cz.muni.fi.pv256.movio.uco374561.db.MovieDbHelper;
 import cz.muni.fi.pv256.movio.uco374561.models.Movie;
+import cz.muni.fi.pv256.movio.uco374561.providers.MovieManager;
 
 /**
  * Created by collfi on 25. 10. 2015.
@@ -33,30 +31,28 @@ public class DetailFragment extends Fragment {
     private TextView mTitle;
     private TextView mOverview;
     private FloatingActionButton mAdd;
-    private SQLiteDatabase mDb;
     private View v;
     private Movie mCurrentMovie;
+    private MovieManager mManager;
     private View.OnClickListener mAddListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            ContentValues cv = new ContentValues();
-            cv.put(MovieContract.MovieEntry.COLUMN_NAME_COVER, "http://image.tmdb.org/t/p/w342" + mCurrentMovie.getCoverPath());
-            cv.put(MovieContract.MovieEntry.COLUMN_NAME_POSTER, "http://image.tmdb.org/t/p/w1280" + mCurrentMovie.getPosterPath());
-            cv.put(MovieContract.MovieEntry.COLUMN_NAME_OVERVIEW, mCurrentMovie.getOverview());
-            cv.put(MovieContract.MovieEntry.COLUMN_NAME_RELEASE_DATE, mCurrentMovie.getReleaseDate());
-            cv.put(MovieContract.MovieEntry.COLUMN_NAME_TITLE, mCurrentMovie.getTitle());
-            mDb.insert(MovieContract.MovieEntry.TABLE_NAME, null, cv);
+            mManager.createMovie(mCurrentMovie);
             mAdd.setImageResource(R.drawable.ic_remove_white_24dp);
             v.setOnClickListener(mRemoveListener);
+            Log.i("floating", String.valueOf(mCurrentMovie.getId()) + " - " + mCurrentMovie.getTitle());
+            Log.i("floating", mManager.getAll().size() + " size");
         }
     };
     private View.OnClickListener mRemoveListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            mDb.delete(MovieContract.MovieEntry.TABLE_NAME, MovieContract.MovieEntry.COLUMN_NAME_TITLE
-                    + " = " + mCurrentMovie.getTitle(), null);
+            mManager.deleteMovie(mCurrentMovie);
             mAdd.setImageResource(R.drawable.ic_add_white_24dp);
             v.setOnClickListener(mAddListener);
+            Log.i("floating", String.valueOf(mCurrentMovie.getId()) + " - " + mCurrentMovie.getTitle());
+            Log.i("floating", mManager.getAll().size() + " size");
+
         }
     };
 
@@ -83,8 +79,7 @@ public class DetailFragment extends Fragment {
         if (getArguments() != null) {
             mMovie = getArguments().getParcelable("movie");
         }
-        mDb = new MovieDbHelper(getActivity()).getWritableDatabase();
-
+        mManager = new MovieManager(getActivity());
     }
 
     @Nullable
@@ -110,8 +105,7 @@ public class DetailFragment extends Fragment {
         }
     }
 
-    public void update(final Movie m) {
-        //todo check db for movie and set the icon!!
+    public void update(Movie m) {
         mCurrentMovie = m;
         if (m.getCoverPath() == null) {
             ImageLoader.getInstance().displayImage("drawable://" + R.drawable.everest, mCover, options);
@@ -128,12 +122,17 @@ public class DetailFragment extends Fragment {
         mTitle.setText(m.getTitle());
         mOverview.setText(m.getOverview());
 
-        mAdd.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
 
-            }
-        });
+        Log.i("floating", String.valueOf(mCurrentMovie.getId()) + " - " + mCurrentMovie.getTitle());
+        Log.i("floating", mManager.getAll().size() + " size");
+        if (mManager.getMovie(String.valueOf(mCurrentMovie.getTitle())) == null) {
+            mAdd.setOnClickListener(mAddListener);
+            mAdd.setImageResource(R.drawable.ic_add_white_24dp);
+        } else {
+            mAdd.setOnClickListener(mRemoveListener);
+            mAdd.setImageResource(R.drawable.ic_remove_white_24dp);
+
+        }
 
     }
 
@@ -146,6 +145,5 @@ public class DetailFragment extends Fragment {
     @Override
     public void onPause() {
         super.onPause();
-        mDb.close();
     }
 }

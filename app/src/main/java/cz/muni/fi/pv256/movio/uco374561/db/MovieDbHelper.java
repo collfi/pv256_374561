@@ -11,11 +11,11 @@ import cz.muni.fi.pv256.movio.uco374561.db.MovieContract.MovieEntry;
  */
 public class MovieDbHelper extends SQLiteOpenHelper{
     public static final int DATABASE_VERSION = 1;
-    public static final String DATABASE_NAME = "movies.db";
+    public static final String DATABASE_NAME = "movies";
 
     
-    private static final String CREATE_MOVIE_TABLE = "CREATE TABLE " + MovieEntry.TABLE_NAME +
-            " (_ID INTEGER PRIMARY KEY, " +
+    private static final String CREATE_MOVIE_TABLE = "CREATE TABLE " + MovieEntry.TABLE_NAME +  " (" +
+            MovieEntry._ID + " INTEGER PRIMARY KEY, " +
             MovieEntry.COLUMN_NAME_TITLE + " TEXT , " +
             MovieEntry.COLUMN_NAME_POSTER + " TEXT, " +
             MovieEntry.COLUMN_NAME_COVER + " TEXT, " +

@@ -22,6 +22,7 @@ public class Movie implements Parcelable {
     String posterPath;
     @SerializedName("overview")
     String overview;
+    Long _id;
 
     public String getCoverPath() {
         return coverPath;
@@ -43,6 +44,62 @@ public class Movie implements Parcelable {
         return overview;
     }
 
+    public Long getId() {
+        return _id;
+    }
+
+    public void setCoverPath(String coverPath) {
+        this.coverPath = coverPath;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public void setReleaseDate(String releaseDate) {
+        this.releaseDate = releaseDate;
+    }
+
+    public void setPosterPath(String posterPath) {
+        this.posterPath = posterPath;
+    }
+
+    public void setOverview(String overview) {
+        this.overview = overview;
+    }
+
+    public void setId(Long id) {
+        this._id = id;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Movie movie = (Movie) o;
+
+        if (coverPath != null ? !coverPath.equals(movie.coverPath) : movie.coverPath != null)
+            return false;
+        if (title != null ? !title.equals(movie.title) : movie.title != null) return false;
+        if (releaseDate != null ? !releaseDate.equals(movie.releaseDate) : movie.releaseDate != null)
+            return false;
+        if (posterPath != null ? !posterPath.equals(movie.posterPath) : movie.posterPath != null)
+            return false;
+        return !(overview != null ? !overview.equals(movie.overview) : movie.overview != null);
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = coverPath != null ? coverPath.hashCode() : 0;
+        result = 31 * result + (title != null ? title.hashCode() : 0);
+        result = 31 * result + (releaseDate != null ? releaseDate.hashCode() : 0);
+        result = 31 * result + (posterPath != null ? posterPath.hashCode() : 0);
+        result = 31 * result + (overview != null ? overview.hashCode() : 0);
+        return result;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -55,20 +112,10 @@ public class Movie implements Parcelable {
         dest.writeString(this.releaseDate);
         dest.writeString(this.posterPath);
         dest.writeString(this.overview);
+        dest.writeValue(this._id);
     }
 
     public Movie() {
-    }
-
-    @Override
-    public String toString() {
-        return "Movie{" +
-                "coverPath='" + coverPath + '\'' +
-                ", title='" + title + '\'' +
-                ", releaseDate='" + releaseDate + '\'' +
-                ", posterPath='" + posterPath + '\'' +
-                ", overview='" + overview + '\'' +
-                '}';
     }
 
     protected Movie(Parcel in) {
@@ -77,6 +124,7 @@ public class Movie implements Parcelable {
         this.releaseDate = in.readString();
         this.posterPath = in.readString();
         this.overview = in.readString();
+        this._id = (Long) in.readValue(Long.class.getClassLoader());
     }
 
     public static final Creator<Movie> CREATOR = new Creator<Movie>() {

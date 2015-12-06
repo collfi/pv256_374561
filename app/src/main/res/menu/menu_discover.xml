@@ -2,6 +2,12 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context=".MainActivity">
+    <item
+        android:id="@+id/sync"
+        android:icon="@drawable/ic_cached_white_24dp"
+        android:orderInCategory="99"
+        app:showAsAction="always"
+        android:title="sync"/>
     <item android:id="@+id/discover"
         android:title="discover"
         android:orderInCategory="100"

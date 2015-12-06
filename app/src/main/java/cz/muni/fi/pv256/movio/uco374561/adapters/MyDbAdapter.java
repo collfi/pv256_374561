@@ -45,12 +45,12 @@ public class MyDbAdapter extends BaseAdapter implements StickyGridHeadersBaseAda
     public int getCount() {
         return mMovies.size();
     }
-    //todo
+
     @Override
     public Object getItem(int position) {
         return position;
     }
-    //todo
+
     @Override
     public long getItemId(int position) {
         return position;
@@ -87,7 +87,7 @@ public class MyDbAdapter extends BaseAdapter implements StickyGridHeadersBaseAda
 
     @Override
     public int getCountForHeader(int header) {
-        return 20;
+        return mMovies.size();
     }
 
     @Override

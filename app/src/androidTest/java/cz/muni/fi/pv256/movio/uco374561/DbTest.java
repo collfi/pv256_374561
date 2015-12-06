@@ -2,7 +2,12 @@ package cz.muni.fi.pv256.movio.uco374561;
 
 import android.test.AndroidTestCase;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import cz.muni.fi.pv256.movio.uco374561.db.MovieContract;
 import cz.muni.fi.pv256.movio.uco374561.models.Movie;
+import cz.muni.fi.pv256.movio.uco374561.providers.MovieManager;
 
 /**
  * Created by collfi on 22. 11. 2015.
@@ -11,64 +16,56 @@ public class DbTest extends AndroidTestCase {
 
     private static final String TAG = "Movie";
 
-    private Movie mMovie;
+
+    private MovieManager mManager;
 
     @Override
     protected void setUp() throws Exception {
-        mMovie = new Movie();
+       mManager = new MovieManager(mContext);
     }
 
     @Override
     public void tearDown() throws Exception {
-//        mContext.getContentResolver().delete(
-//                WorkTimeEntry.CONTENT_URI,
-//                null,
-//                null
-//        );
+        mContext.getContentResolver().delete(
+                MovieContract.MovieEntry.CONTENT_URI, null,null);
+        super.tearDown();
     }
 
-    public void testGetWorkTimesInDay() throws Exception {
-//        List<WorkTime> expectedWorkTimes = new ArrayList<>(2);
-//        WorkTime workTime1 = createWorkTime(new DateTime(2015, 5, 26, 1, 0), new DateTime(2015, 5, 26, 5, 0));
-//        WorkTime workTime2 = createWorkTime(new DateTime(2015, 5, 26, 6, 0), new DateTime(2015, 5, 26, 7, 0));
-//        expectedWorkTimes.add(workTime1);
-//        expectedWorkTimes.add(workTime2);
-//
-//        mManager.createWorkTime(workTime1);
-//        mManager.createWorkTime(createWorkTime(new DateTime(2015, 5, 27, 1, 0), new DateTime(2015, 5, 27, 5, 0)));
-//        mManager.createWorkTime(workTime2);
-//
-//        List<WorkTime> workTimes = mManager.getWorkTimesInDay(new LocalDate(2015, 5, 26));
-//        Log.d(TAG, workTimes.toString());
-//        assertTrue(workTimes.size() == 2);
-//        assertEquals(expectedWorkTimes, workTimes);
+    public void testAll() throws Exception {
+        List<Movie> movies = new ArrayList<>(2);
+        Movie m1 = createMovie("Movie1", "poster", "cover", "date", "overview");
+        Movie m2 = createMovie("Movie2", "poster", "cover", "date", "overview");
+        movies.add(m1);
+        movies.add(m2);
+        mManager.createMovie(m1);
+        mManager.createMovie(m2);
+        List<Movie> result = mManager.getAll();
+        assertTrue(result.size() == 2);
+        assertEquals(movies, result);
     }
 
-    public void testGetWorkTimesInInterval() throws Exception {
-//        List<WorkTime> expectedWorkTimes = new ArrayList<>(2);
-//        WorkTime workTime1 = createWorkTime(new DateTime(2015, 5, 26, 1, 0), new DateTime(2015, 5, 26, 5, 0));
-//        WorkTime workTime2 = createWorkTime(new DateTime(2015, 5, 26, 6, 0), new DateTime(2015, 5, 26, 7, 0));
-//        WorkTime workTime3 = createWorkTime(new DateTime(2015, 5, 27, 1, 0), new DateTime(2015, 5, 27, 5, 0));
-//        expectedWorkTimes.add(workTime1);
-//        expectedWorkTimes.add(workTime2);
-//        expectedWorkTimes.add(workTime3);
-//
-//        mManager.createWorkTime(createWorkTime(new DateTime(2015, 5, 25, 2, 0), new DateTime(2015, 5, 25, 5, 0)));
-//        mManager.createWorkTime(workTime1);
-//        mManager.createWorkTime(workTime2);
-//        mManager.createWorkTime(workTime3);
-//        mManager.createWorkTime(createWorkTime(new DateTime(2015, 5, 28, 1, 0), new DateTime(2015, 5, 28, 5, 0)));
-//
-//        List<WorkTime> workTimes = mManager.getWorkTimesInInterval(new Interval(new DateTime(2015, 5, 26, 0, 0), new DateTime(2015, 5, 27, 0, 0)));
-//        Log.d(TAG, workTimes.toString());
-//        assertTrue(workTimes.size() == 3);
-//        assertEquals(expectedWorkTimes, workTimes);
+    public void testGet() throws Exception {
+        Movie m = createMovie("Movie", "poster", "cover", "date", "overview");
+        mManager.createMovie(m);
+        Movie result = mManager.getMovie(m.getTitle());
+        assertEquals(m, result);
     }
 
-//    private WorkTime createWorkTime(DateTime startDate, DateTime endDate) {
-//        WorkTime workTime = new WorkTime();
-//        workTime.setStartDate(startDate);
-//        workTime.setEndDate(endDate);
-//        return workTime;
-//    }
+    public void testDelete() throws Exception {
+        Movie m = createMovie("Movie", "poster", "cover", "date", "overview");
+        mManager.createMovie(m);
+        mManager.deleteMovie(m);
+        Movie result = mManager.getMovie(m.getTitle());
+        assertNull(result);
+    }
+
+    private Movie createMovie(String title, String poster, String cover, String date, String overview) {
+        Movie m = new Movie();
+        m.setCoverPath(cover);
+        m.setOverview(overview);
+        m.setPosterPath(poster);
+        m.setTitle(title);
+        m.setReleaseDate(date);
+        return m;
+    }
 }

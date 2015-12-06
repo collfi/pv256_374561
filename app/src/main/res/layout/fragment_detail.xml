@@ -117,7 +117,6 @@
         android:layout_height="wrap_content"
         android:layout_marginRight="10dp"
         android:id="@+id/add"
-        android:src="@drawable/ic_add_white_48dp"
         app:borderWidth="0dp"
         app:layout_anchor="@id/poster"
         app:layout_anchorGravity="bottom|right|end"/>

@@ -5,8 +5,6 @@ import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 
 import java.util.List;
 
@@ -15,17 +13,10 @@ import cz.muni.fi.pv256.movio.uco374561.R;
 import cz.muni.fi.pv256.movio.uco374561.fragments.DetailFragment;
 import cz.muni.fi.pv256.movio.uco374561.fragments.GridFragment;
 import cz.muni.fi.pv256.movio.uco374561.models.Movie;
+import cz.muni.fi.pv256.movio.uco374561.sync.MovieSyncAdapter;
 
 public class MainActivity extends AppCompatActivity implements GridFragment.OnItemSelectedListener {
- /* ask
- loader - get data
- zmena zdroja v myAdapteri v GridFragmente z MainActivity
- test? co testovat, staci pridat vymazat...?
 
-
-
-
-  */
     private List<Movie> mMovies;
     private boolean mTwoPane;
 
@@ -33,39 +24,16 @@ public class MainActivity extends AppCompatActivity implements GridFragment.OnIt
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        if (BuildConfig.logging){
+        if (BuildConfig.logging) {
             Log.i("Logging", "PAID VERSION");
         }
-
-
         if (findViewById(R.id.detail_container) == null) {
             mTwoPane = false;
         } else {
             mTwoPane = true;
         }
-//        ConnectivityManager cm =
-//                (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-//
-//        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-//        boolean isConnected = activeNetwork != null &&
-//                activeNetwork.isConnectedOrConnecting();
-//
-//        TextView t = (TextView) findViewById(R.id.text_empty);
-//        t.setText((isConnected) ? "No data" : "No connection");
-//
-
-
-        //old
-//        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-//        setSupportActionBar(toolbar);
-//        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-//        fab.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-//                        .setAction("Action", null).show();
-//            }
-//        });
+        MovieSyncAdapter.initializeSyncAdapter(this);
+        MovieSyncAdapter.syncImmediately(this);
     }
 
     @Override
@@ -78,7 +46,7 @@ public class MainActivity extends AppCompatActivity implements GridFragment.OnIt
         if (mTwoPane) {
             DetailFragment detailFragment = DetailFragment.newInstance(m);
             getSupportFragmentManager().beginTransaction().replace(R.id.detail_container,
-            detailFragment).commit();
+                    detailFragment).commit();
         } else {
             Intent intent = new Intent(this, DetailActivity.class);
             intent.putExtra("movie", m);
