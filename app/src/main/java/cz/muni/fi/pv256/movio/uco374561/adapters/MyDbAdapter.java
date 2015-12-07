@@ -18,11 +18,13 @@ import java.util.List;
 
 import cz.muni.fi.pv256.movio.uco374561.R;
 import cz.muni.fi.pv256.movio.uco374561.models.Movie;
+import cz.muni.fi.pv256.movio.uco374561.providers.MovieManager;
 
 /**
  * Created by xvalent2 on 23.11.15.
  */
 public class MyDbAdapter extends BaseAdapter implements StickyGridHeadersBaseAdapter{
+    //todo cursoradapter
     private LayoutInflater inflater;
     private List<Movie> mMovies;
     private DisplayImageOptions options;
@@ -33,6 +35,8 @@ public class MyDbAdapter extends BaseAdapter implements StickyGridHeadersBaseAda
         inflater = LayoutInflater.from(context);
         Log.i("QQQ", list.size() + "---" );
         mMovies = list;
+//        MovieManager manager = new MovieManager(context);
+//        mMovies = manager.getAll();
         options = new DisplayImageOptions.Builder()
                 .cacheInMemory(true)
                 .cacheOnDisk(true)
@@ -61,14 +65,12 @@ public class MyDbAdapter extends BaseAdapter implements StickyGridHeadersBaseAda
         View view = convertView;
         final ViewHolder holder;
         if (convertView == null) {
-            Log.i("", "inflate radku " + position);
             view = inflater.inflate(R.layout.grid_item, parent, false);
             view.setId(position);
             holder = new ViewHolder();
             holder.image = (ImageView) view.findViewById(R.id.image);
             view.setTag(holder);
         } else {
-            Log.i("", "recyklace radku " + position);
             holder = (ViewHolder) view.getTag();
         }
 //        holder.image.setImageResource(R.drawable.everest);

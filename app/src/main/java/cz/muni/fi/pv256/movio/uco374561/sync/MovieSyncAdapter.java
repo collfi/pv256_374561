@@ -41,7 +41,7 @@ import retrofit.converter.GsonConverter;
  * Created by collfi on 5. 12. 2015.
  */
 public class MovieSyncAdapter extends AbstractThreadedSyncAdapter{
-    public static final int SYNC_INTERVAL =10;// 60 * 60 * 24;
+    public static final int SYNC_INTERVAL = 10;// 60 * 60 * 24;
     public static final int SYNC_FLEXTIME = SYNC_INTERVAL / 3;
 
 
@@ -88,6 +88,7 @@ public class MovieSyncAdapter extends AbstractThreadedSyncAdapter{
             Intent i = new Intent("cz.muni.fi.movio");
             i.putParcelableArrayListExtra("movies", l);
 //            sendBroadcast(i);
+            
             //todo cosi spravit
         }
     }
@@ -113,8 +114,7 @@ public class MovieSyncAdapter extends AbstractThreadedSyncAdapter{
     }
 
     public static Account getAccount(){
-        final String what="account";
-        return new Account(what, "cz.muni.fi.pv256.movio.uco374561.providers.MovieProvider");
+        return new Account("account", "cz.muni.fi.pv256.movio.uco374561.providers.MovieProvider");
     }
 
     public class ItemTypeAdapterFactory implements TypeAdapterFactory {

@@ -33,7 +33,7 @@ public class MainActivity extends AppCompatActivity implements GridFragment.OnIt
             mTwoPane = true;
         }
         MovieSyncAdapter.initializeSyncAdapter(this);
-        MovieSyncAdapter.syncImmediately(this);
+//        MovieSyncAdapter.syncImmediately(this);
     }
 
     @Override

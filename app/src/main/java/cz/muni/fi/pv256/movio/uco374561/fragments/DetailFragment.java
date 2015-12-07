@@ -42,6 +42,7 @@ public class DetailFragment extends Fragment {
             v.setOnClickListener(mRemoveListener);
             Log.i("floating", String.valueOf(mCurrentMovie.getId()) + " - " + mCurrentMovie.getTitle());
             Log.i("floating", mManager.getAll().size() + " size");
+            //todo refresh adapter
         }
     };
     private View.OnClickListener mRemoveListener = new View.OnClickListener() {
@@ -52,6 +53,7 @@ public class DetailFragment extends Fragment {
             v.setOnClickListener(mAddListener);
             Log.i("floating", String.valueOf(mCurrentMovie.getId()) + " - " + mCurrentMovie.getTitle());
             Log.i("floating", mManager.getAll().size() + " size");
+            //todo refresh adapter
 
         }
     };

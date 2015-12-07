@@ -175,6 +175,7 @@ public class GridFragment extends Fragment {
         //noinspection SimplifiableIfStatement
         if (id == R.id.favorites) {
             Log.i("zzzz", mGrid + " - " + mDbAdapter + " - " + mDbAdapter.getCount());
+            mDbAdapter = new MyDbAdapter(getActivity(), new ArrayList<Movie>());
             mGrid.setAdapter(mDbAdapter);
             adapter = DB;
 

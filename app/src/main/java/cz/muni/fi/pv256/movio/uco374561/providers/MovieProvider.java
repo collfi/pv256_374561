@@ -154,4 +154,5 @@ public class MovieProvider extends ContentProvider {
         }
         return rowsUpdated;
     }
+
 }
