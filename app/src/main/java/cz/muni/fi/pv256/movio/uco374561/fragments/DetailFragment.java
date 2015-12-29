@@ -42,7 +42,6 @@ public class DetailFragment extends Fragment {
             v.setOnClickListener(mRemoveListener);
             Log.i("floating", String.valueOf(mCurrentMovie.getId()) + " - " + mCurrentMovie.getTitle());
             Log.i("floating", mManager.getAll().size() + " size");
-            //todo refresh adapter
         }
     };
     private View.OnClickListener mRemoveListener = new View.OnClickListener() {
@@ -53,8 +52,6 @@ public class DetailFragment extends Fragment {
             v.setOnClickListener(mAddListener);
             Log.i("floating", String.valueOf(mCurrentMovie.getId()) + " - " + mCurrentMovie.getTitle());
             Log.i("floating", mManager.getAll().size() + " size");
-            //todo refresh adapter
-
         }
     };
 
@@ -94,7 +91,6 @@ public class DetailFragment extends Fragment {
         mTitle = (TextView) v.findViewById(R.id.title);
         mOverview = (TextView) v.findViewById(R.id.overview);
         mAdd = (FloatingActionButton) v.findViewById(R.id.add);
-
         return v;
     }
 
@@ -103,7 +99,6 @@ public class DetailFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         if (mMovie != null) {
             update(mMovie);
-        } else {
         }
     }
 
@@ -127,7 +122,7 @@ public class DetailFragment extends Fragment {
 
         Log.i("floating", String.valueOf(mCurrentMovie.getId()) + " - " + mCurrentMovie.getTitle());
         Log.i("floating", mManager.getAll().size() + " size");
-        if (mManager.getMovie(String.valueOf(mCurrentMovie.getTitle())) == null) {
+        if (mManager.getMovie(String.valueOf(mCurrentMovie.getMovieId())) == null) {
             mAdd.setOnClickListener(mAddListener);
             mAdd.setImageResource(R.drawable.ic_add_white_24dp);
         } else {
@@ -137,6 +132,7 @@ public class DetailFragment extends Fragment {
         }
 
     }
+
 
     @Override
     public void onSaveInstanceState(Bundle outState) {

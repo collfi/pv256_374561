@@ -12,41 +12,36 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SyncResult;
 import android.media.RingtoneManager;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.TypeAdapter;
-import com.google.gson.TypeAdapterFactory;
-import com.google.gson.reflect.TypeToken;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
 
-import java.io.IOException;
 import java.util.ArrayList;
 
 import cz.muni.fi.pv256.movio.uco374561.db.MovieContract;
 import cz.muni.fi.pv256.movio.uco374561.models.Movie;
+import cz.muni.fi.pv256.movio.uco374561.providers.MovieManager;
 import cz.muni.fi.pv256.movio.uco374561.services.Download;
 import retrofit.RequestInterceptor;
 import retrofit.RestAdapter;
 import retrofit.client.OkClient;
-import retrofit.converter.GsonConverter;
 
 /**
  * Created by collfi on 5. 12. 2015.
  */
-public class MovieSyncAdapter extends AbstractThreadedSyncAdapter{
-    public static final int SYNC_INTERVAL = 10;// 60 * 60 * 24;
+public class MovieSyncAdapter extends AbstractThreadedSyncAdapter {
+    public static final int SYNC_INTERVAL = 2;
     public static final int SYNC_FLEXTIME = SYNC_INTERVAL / 3;
+    private Context mContext;
 
 
     public MovieSyncAdapter(Context context, boolean autoInitialize) {
         super(context, autoInitialize);
+        mContext = context;
     }
 
     public MovieSyncAdapter(Context context, boolean autoInitialize, boolean allowParallelSyncs) {
@@ -56,13 +51,17 @@ public class MovieSyncAdapter extends AbstractThreadedSyncAdapter{
     @Override
     public void onPerformSync(Account account, Bundle extras, String authority, ContentProviderClient provider, SyncResult syncResult) {
         Log.i("zzzzzz", "perform sync");
+        if (!isConnected()) {
+            notification("You are not connected to the internet.", "Network error");
+        }
         Gson gson = new GsonBuilder()
-                .registerTypeAdapterFactory(new ItemTypeAdapterFactory())
                 .create();
         RestAdapter adapter = new RestAdapter.Builder()
                 .setEndpoint("http://api.themoviedb.org/3/")
                 .setClient(new OkClient())
-                .setConverter(new GsonConverter(gson))
+
+//                .setLogLevel(RestAdapter.LogLevel.FULL)
+//                .setConverter(new GsonConverter(gson))
                 .setRequestInterceptor(new RequestInterceptor() {
                     @Override
                     public void intercept(final RequestFacade request) {
@@ -73,32 +72,101 @@ public class MovieSyncAdapter extends AbstractThreadedSyncAdapter{
         //http://api.themoviedb.org/3/discover/movie?primary_release_date.gte=2015-11-09&primary_
         // release_date.lte=2015-11-16&sort_by=avg_rating.desc&api_key=" + "c331638cd30b7ab8a4b73dedbbb62193
         Download d = adapter.create(Download.class);
-        ArrayList<Movie> l = new ArrayList<>();
-        try {
-            l.addAll(d.getMovies2("2015-11-09", "2015-11-16", "avg_rating.desc",
-                    "c331638cd30b7ab8a4b73dedbbb62193"));
 
-            l.addAll(d.getMovies1("c331638cd30b7ab8a4b73dedbbb62193"));
+        try {
+            MovieManager manager = new MovieManager(mContext);
+            ArrayList<Movie> l = manager.getAll();
+
+            for (Movie m : l) {
+                Movie downloaded = d.getMovie(m.getMovieId(), "c331638cd30b7ab8a4b73dedbbb62193");
+                if (!downloaded.equals(m)) {
+                    manager.updateMovie(downloaded);
+                    notification(downloaded.getTitle(), "Movie updated");
+                }
+            }
         } catch (Exception e) {
-            notification(e.toString());
+            Log.e("sync service", "Exception. " + e.getLocalizedMessage());
+            notification("Error while getting data", "Download Error");
         }
-        if (l.size() == 0) {
-            notification("No movies");
-        } else {
-            Intent i = new Intent("cz.muni.fi.movio");
-            i.putParcelableArrayListExtra("movies", l);
-//            sendBroadcast(i);
-            
-            //todo cosi spravit
-        }
+//        try {
+//
+//            //try new?
+//            for (Movie m : l) {
+//                String changes = d.getMovieChanges(m.getMovieId(), "c331638cd30b7ab8a4b73dedbbb62193").toString();
+//                Log.i("qqqqqq", changes);
+//                changes = changes.replace("=", "=\"");
+//                changes = changes.replace(",", "\",");
+//                Log.i("qqqqqq", changes);
+//
+//                JSONObject jo = new JSONObject(changes);
+//                if (jo.has("changes")) {
+//                    JSONArray ja = jo.getJSONArray("changes");
+//                    for (int i = 0; i < ja.length(); i++) {
+//                        boolean change = false;
+//                        String key = ja.getJSONObject(i).getString("key");
+//                        if (key.equals("release_date")) {
+//                            JSONArray date = ja.getJSONObject(i).getJSONArray("items");
+//                            m.setReleaseDate(date.getJSONObject(i).getString("value"));
+//                            change = true;
+//                        }
+//                        if (key.equals("original_title")) {
+//                            JSONArray title = ja.getJSONObject(i).getJSONArray("items");
+//                            m.setTitle(title.getJSONObject(i).getString("value"));
+//                            change = true;
+//                        }
+//                        if (key.equals("poster_path")) {
+//                            JSONArray poster = ja.getJSONObject(i).getJSONArray("items");
+//                            m.setCoverPath(poster.getJSONObject(i).getString("value"));
+//                            change = true;
+//                        }
+//                        if (key.equals("backdrop_path")) {
+//                            JSONArray backdrop = ja.getJSONObject(i).getJSONArray("items");
+//                            m.setPosterPath(backdrop.getJSONObject(i).getString("value"));
+//                            change = true;
+//                        }
+//                        if (key.equals("id")) {
+//                            JSONArray id = ja.getJSONObject(i).getJSONArray("items");
+//                            m.setMovieId(id.getJSONObject(i).getString("value"));
+//                            change = true;
+//                        }
+//                        if (key.equals("overview")) {
+//                            JSONArray overview = ja.getJSONObject(i).getJSONArray("items");
+//                            m.setOverview(overview.getJSONObject(i).getString("value"));
+//                            change = true;
+//                        }
+//                        change = true;
+//                        if (change) {
+//                            manager.updateMovie(m);
+//                            notification(m.getTitle());
+//                        }
+//                    }
+//                }
+//            }
+
+            //
+//            l.addAll(d.getNextWeek("2015-11-09", "2015-11-16", "avg_rating.desc",
+//                    "c331638cd30b7ab8a4b73dedbbb62193"));
+//
+//            l.addAll(d.getNowPlaying("c331638cd30b7ab8a4b73dedbbb62193"));
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            Log.e("sync adapter", e.getLocalizedMessage());
+//            notification(e.toString());
+//        }
+//        Intent i = new Intent("cz.muni.fi.movio");
+//        i.putParcelableArrayListExtra("movies", l);
+////            sendBroadcast(i);
+//        //refresh adapter!!!
+//        //todo cosi spravit
+
     }
+
 
     public static void initializeSyncAdapter(Context context) {
         getSyncAccount(context);
     }
 
     public static void syncImmediately(Context context) {
-        Toast.makeText(context, "SYNCCCCCCCCC si", Toast.LENGTH_SHORT).show();
         Bundle bundle = new Bundle();
         bundle.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
         bundle.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);
@@ -113,46 +181,48 @@ public class MovieSyncAdapter extends AbstractThreadedSyncAdapter{
 
     }
 
-    public static Account getAccount(){
+    public static Account getAccount() {
         return new Account("account", "cz.muni.fi.pv256.movio.uco374561.providers.MovieProvider");
     }
 
-    public class ItemTypeAdapterFactory implements TypeAdapterFactory {
 
-        public <T> TypeAdapter<T> create(Gson gson, final TypeToken<T> type) {
+//    public class ItemTypeAdapterFactory implements TypeAdapterFactory {
+//
+//        public <T> TypeAdapter<T> create(Gson gson, final TypeToken<T> type) {
+//
+//            final TypeAdapter<T> delegate = gson.getDelegateAdapter(this, type);
+//            final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+//
+//            return new TypeAdapter<T>() {
+//
+//                public void write(JsonWriter out, T value) throws IOException {
+//                    delegate.write(out, value);
+//                }
+//
+//                public T read(JsonReader in) throws IOException {
+//
+//                    JsonElement jsonElement = elementAdapter.read(in);
+//                    if (jsonElement.isJsonObject()) {
+//                        JsonObject jsonObject = jsonElement.getAsJsonObject();
+//                        Log.i("zzzzzz****", jsonObject.toString());
+//                        if (jsonObject.has("changes") && jsonObject.get("changes").isJsonArray()) {
+//
+//                            jsonElement = jsonObject.get("changes");
+//                        }
+//                    }
+//
+//                    return delegate.fromJsonTree(jsonElement);
+//                }
+//            }.nullSafe();
+//        }
+//    }
 
-            final TypeAdapter<T> delegate = gson.getDelegateAdapter(this, type);
-            final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
-
-            return new TypeAdapter<T>() {
-
-                public void write(JsonWriter out, T value) throws IOException {
-                    delegate.write(out, value);
-                }
-
-                public T read(JsonReader in) throws IOException {
-
-                    JsonElement jsonElement = elementAdapter.read(in);
-                    if (jsonElement.isJsonObject()) {
-                        JsonObject jsonObject = jsonElement.getAsJsonObject();
-                        if (jsonObject.has("results") && jsonObject.get("results").isJsonArray()) {
-                            jsonElement = jsonObject.get("results");
-//                            jsonElement = jsonObject.get("data");
-                        }
-                    }
-
-                    return delegate.fromJsonTree(jsonElement);
-                }
-            }.nullSafe();
-        }
-    }
-
-    public void notification(String error) {
+    public void notification(String message, String title) {
         Intent intent = new Intent();
         PendingIntent pIntent = PendingIntent.getActivity(getContext(), 0, intent, 0);
         Notification n = new Notification.Builder(getContext())
-                .setContentTitle("Chyba pri ziskavani filmov")
-                .setContentText(error)
+                .setContentTitle(title)
+                .setContentText(message)
                 .setSmallIcon(android.R.drawable.btn_star)
                 .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
                 .getNotification();
@@ -215,5 +285,12 @@ public class MovieSyncAdapter extends AbstractThreadedSyncAdapter{
          * Finally, let's do a sync to get things started
          */
         syncImmediately(context);
+    }
+
+    private boolean isConnected() {
+        ConnectivityManager connectivityManager
+                = (ConnectivityManager) getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
 }

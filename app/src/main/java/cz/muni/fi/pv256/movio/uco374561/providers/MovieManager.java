@@ -15,24 +15,19 @@ import cz.muni.fi.pv256.movio.uco374561.models.Movie;
  * Created by collfi on 23. 11. 2015.
  */
 public class MovieManager {
-    //    public static final int COL_WORK_TIME_ID = 0;
-//    public static final int COL_WORK_TIME_START_DATE = 1;
-//    public static final int COL_WORK_TIME_END_DATE = 2;
+
     private static final String[] MOVIE_COLUMNS = {
             MovieContract.MovieEntry._ID,
             MovieContract.MovieEntry.COLUMN_NAME_OVERVIEW,
             MovieContract.MovieEntry.COLUMN_NAME_RELEASE_DATE,
             MovieContract.MovieEntry.COLUMN_NAME_COVER,
+            MovieContract.MovieEntry.COLUMN_NAME_ID,
             MovieContract.MovieEntry.COLUMN_NAME_POSTER,
             MovieContract.MovieEntry.COLUMN_NAME_TITLE,
-
     };
 
-    private static final String LOCAL_DATE_FORMAT = "yyyyMMdd";
-
-    private static final String WHERE_ID = MovieContract.MovieEntry._ID + " = ?";
+    private static final String WHERE_ID = MovieContract.MovieEntry.COLUMN_NAME_ID + " = ?";
     private static final String WHERE_TITLE = MovieContract.MovieEntry.COLUMN_NAME_TITLE + " = ?";
-
 
     private Context mContext;
 
@@ -76,7 +71,7 @@ public class MovieManager {
 //        Cursor cursor = mContext.getContentResolver().query(MovieContract.MovieEntry.CONTENT_URI, MOVIE_COLUMNS,
 //                WHERE_ID, new String[]{id}, null);
         Cursor cursor = mContext.getContentResolver().query(MovieContract.MovieEntry.CONTENT_URI, MOVIE_COLUMNS,
-                WHERE_TITLE, new String[]{id}, null);
+                WHERE_ID, new String[]{id}, null);
         Log.i("getmovie", cursor.getCount() + " count");
 
         if (cursor.moveToFirst()) {
@@ -93,26 +88,26 @@ public class MovieManager {
         return null;
     }
 
-//    public void updateMovie(Movie movie) {
-//        if (movie == null) {
-//            throw new NullPointerException("movie == null");
-//        }
+    public void updateMovie(Movie movie) {
+        if (movie == null) {
+            throw new NullPointerException("movie == null");
+        }
 //        if (movie.getId() == null) {
 //            throw new IllegalStateException("movie id cannot be null");
 //        }
-//        if (movie.getTitle() == null) {
-//            throw new IllegalStateException("movie title cannot be null");
-//        }
-//
-//        mContext.getContentResolver().update(MovieContract.MovieEntry.CONTENT_URI, prepareMovieValues(movie), WHERE_ID, new String[]{String.valueOf(movie.getId())});
-//    }
+        if (movie.getTitle() == null) {
+            throw new IllegalStateException("movie title cannot be null");
+        }
+
+        mContext.getContentResolver().update(MovieContract.MovieEntry.CONTENT_URI, prepareMovieValues(movie), WHERE_ID, new String[]{String.valueOf(movie.getMovieId())});
+    }
 
 
     public void deleteMovie(Movie movie) {
         if (movie == null) {
             throw new NullPointerException("movie == null");
         }
-        mContext.getContentResolver().delete(MovieContract.MovieEntry.CONTENT_URI, WHERE_TITLE, new String[]{String.valueOf(movie.getTitle())});
+        mContext.getContentResolver().delete(MovieContract.MovieEntry.CONTENT_URI, WHERE_ID, new String[]{String.valueOf(movie.getMovieId())});
 //        mContext.getContentResolver().delete(MovieContract.MovieEntry.CONTENT_URI, WHERE_ID, new String[]{String.valueOf(movie.getId())});
         movie.setId(null);
 
@@ -125,6 +120,7 @@ public class MovieManager {
         values.put(MovieContract.MovieEntry.COLUMN_NAME_POSTER, movie.getPosterPath());
         values.put(MovieContract.MovieEntry.COLUMN_NAME_COVER, movie.getCoverPath());
         values.put(MovieContract.MovieEntry.COLUMN_NAME_RELEASE_DATE, movie.getReleaseDate());
+        values.put(MovieContract.MovieEntry.COLUMN_NAME_ID, movie.getMovieId());
         return values;
     }
 
@@ -136,6 +132,7 @@ public class MovieManager {
         movie.setOverview(cursor.getString(cursor.getColumnIndexOrThrow(MovieContract.MovieEntry.COLUMN_NAME_OVERVIEW)));
         movie.setPosterPath(cursor.getString(cursor.getColumnIndexOrThrow(MovieContract.MovieEntry.COLUMN_NAME_POSTER)));
         movie.setCoverPath(cursor.getString(cursor.getColumnIndexOrThrow(MovieContract.MovieEntry.COLUMN_NAME_COVER)));
+        movie.setMovieId(cursor.getString(cursor.getColumnIndexOrThrow(MovieContract.MovieEntry.COLUMN_NAME_ID)));
         return movie;
     }
 

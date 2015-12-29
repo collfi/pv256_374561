@@ -47,7 +47,7 @@ public class DbTest extends AndroidTestCase {
     public void testGet() throws Exception {
         Movie m = createMovie("Movie", "poster", "cover", "date", "overview");
         mManager.createMovie(m);
-        Movie result = mManager.getMovie(m.getTitle());
+        Movie result = mManager.getMovie(m.getMovieId());
         assertEquals(m, result);
     }
 
@@ -55,7 +55,7 @@ public class DbTest extends AndroidTestCase {
         Movie m = createMovie("Movie", "poster", "cover", "date", "overview");
         mManager.createMovie(m);
         mManager.deleteMovie(m);
-        Movie result = mManager.getMovie(m.getTitle());
+        Movie result = mManager.getMovie(m.getMovieId());
         assertNull(result);
     }
 

@@ -20,22 +20,19 @@ import cz.muni.fi.pv256.movio.uco374561.R;
 import cz.muni.fi.pv256.movio.uco374561.models.Movie;
 
 /**
- * Created by xvalent2 on 23.11.15.
+ * Created by collfi on 27. 12. 2015.
  */
-public class MyDbAdapter extends BaseAdapter implements StickyGridHeadersBaseAdapter{
-    //todo cursoradapter
+public class MyAdapter extends BaseAdapter implements StickyGridHeadersBaseAdapter {
+
     private LayoutInflater inflater;
     private List<Movie> mMovies;
     private DisplayImageOptions options;
-    public static final int[] headers = {R.string.favorites};
+    private int[] headers;
 
-
-    public MyDbAdapter(Context context, List<Movie> list) {
+    public MyAdapter(Context context, List<Movie> list, int[] headers) {
+        this.headers = headers;
         inflater = LayoutInflater.from(context);
-        Log.i("QQQ", list.size() + "---" );
         mMovies = list;
-//        MovieManager manager = new MovieManager(context);
-//        mMovies = manager.getAll();
         options = new DisplayImageOptions.Builder()
                 .cacheInMemory(true)
                 .cacheOnDisk(true)
@@ -44,16 +41,15 @@ public class MyDbAdapter extends BaseAdapter implements StickyGridHeadersBaseAda
                 .build();
     }
 
+
     @Override
     public int getCount() {
         return mMovies.size();
     }
-
     @Override
     public Object getItem(int position) {
         return position;
     }
-
     @Override
     public long getItemId(int position) {
         return position;
@@ -64,15 +60,16 @@ public class MyDbAdapter extends BaseAdapter implements StickyGridHeadersBaseAda
         View view = convertView;
         final ViewHolder holder;
         if (convertView == null) {
+            Log.i("","inflate radku "+ position);
             view = inflater.inflate(R.layout.grid_item, parent, false);
             view.setId(position);
             holder = new ViewHolder();
             holder.image = (ImageView) view.findViewById(R.id.image);
             view.setTag(holder);
         } else {
+            Log.i("", "recyklace radku " + position);
             holder = (ViewHolder) view.getTag();
         }
-//        holder.image.setImageResource(R.drawable.everest);
         if (mMovies.get(position).getCoverPath() == null) {
             ImageLoader.getInstance().displayImage("drawable://" + R.drawable.everest, holder.image, options);
 
@@ -88,12 +85,14 @@ public class MyDbAdapter extends BaseAdapter implements StickyGridHeadersBaseAda
 
     @Override
     public int getCountForHeader(int header) {
-        return mMovies.size();
+        if (headers.length > 1) {
+            return 20;
+        } else return mMovies.size();
     }
 
     @Override
     public int getNumHeaders() {
-        return 1;
+        return headers.length;
     }
 
     @Override

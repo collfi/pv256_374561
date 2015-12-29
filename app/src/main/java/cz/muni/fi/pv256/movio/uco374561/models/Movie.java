@@ -22,7 +22,18 @@ public class Movie implements Parcelable {
     String posterPath;
     @SerializedName("overview")
     String overview;
+    @SerializedName("id")
+    String movieId;
     Long _id;
+
+
+    public String getMovieId() {
+        return movieId;
+    }
+
+    public void setMovieId(String movieId) {
+        this.movieId = movieId;
+    }
 
     public String getCoverPath() {
         return coverPath;
@@ -72,6 +83,7 @@ public class Movie implements Parcelable {
         this._id = id;
     }
 
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -86,7 +98,9 @@ public class Movie implements Parcelable {
             return false;
         if (posterPath != null ? !posterPath.equals(movie.posterPath) : movie.posterPath != null)
             return false;
-        return !(overview != null ? !overview.equals(movie.overview) : movie.overview != null);
+        if (overview != null ? !overview.equals(movie.overview) : movie.overview != null)
+            return false;
+        return !(movieId != null ? !movieId.equals(movie.movieId) : movie.movieId != null);
 
     }
 
@@ -97,7 +111,21 @@ public class Movie implements Parcelable {
         result = 31 * result + (releaseDate != null ? releaseDate.hashCode() : 0);
         result = 31 * result + (posterPath != null ? posterPath.hashCode() : 0);
         result = 31 * result + (overview != null ? overview.hashCode() : 0);
+        result = 31 * result + (movieId != null ? movieId.hashCode() : 0);
         return result;
+    }
+
+    @Override
+    public String toString() {
+        return "Movie{" +
+                "coverPath='" + coverPath + '\'' +
+                ", title='" + title + '\'' +
+                ", releaseDate='" + releaseDate + '\'' +
+                ", posterPath='" + posterPath + '\'' +
+                ", overview='" + overview + '\'' +
+                ", movieId='" + movieId + '\'' +
+                ", _id=" + _id +
+                '}';
     }
 
     @Override
@@ -112,18 +140,20 @@ public class Movie implements Parcelable {
         dest.writeString(this.releaseDate);
         dest.writeString(this.posterPath);
         dest.writeString(this.overview);
+        dest.writeString(this.movieId);
         dest.writeValue(this._id);
     }
 
     public Movie() {
     }
 
-    protected Movie(Parcel in) {
+    private Movie(Parcel in) {
         this.coverPath = in.readString();
         this.title = in.readString();
         this.releaseDate = in.readString();
         this.posterPath = in.readString();
         this.overview = in.readString();
+        this.movieId = in.readString();
         this._id = (Long) in.readValue(Long.class.getClassLoader());
     }
 

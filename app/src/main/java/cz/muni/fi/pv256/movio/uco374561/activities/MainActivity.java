@@ -33,7 +33,6 @@ public class MainActivity extends AppCompatActivity implements GridFragment.OnIt
             mTwoPane = true;
         }
         MovieSyncAdapter.initializeSyncAdapter(this);
-//        MovieSyncAdapter.syncImmediately(this);
     }
 
     @Override
@@ -54,49 +53,10 @@ public class MainActivity extends AppCompatActivity implements GridFragment.OnIt
         }
 
 
-
-        /*
-        DetailFragment detailFragment = (DetailFragment) getSupportFragmentManager().
-                findFragmentById(R.id.detail_fragment);
-        if (detailFragment == null) {
-            // port
-            FragmentManager fm = getSupportFragmentManager();
-            fm.beginTransaction().add(R.id.grid_fragment, DetailFragment.newInstance(m),
-                    null).addToBackStack("detail").commit();
-        } else {
-            FragmentManager fm = getSupportFragmentManager();
-
-            fm.beginTransaction().replace(R.id.grid_fragment, detailFragment,
-                    null).addToBackStack("detail").commit();
-            detailFragment.update(m);
-
-        }*/
     }
 
-//    @Override
-//    public boolean onCreateOptionsMenu(Menu menu) {
-//        // Inflate the menu; this adds items to the action bar if it is present.
-//        getMenuInflater().inflate(R.menu.menu_main, menu);
-//        return true;
-//    }
-
-//    @Override
-//    public boolean onOptionsItemSelected(MenuItem item) {
-//        // Handle action bar item clicks here. The action bar will
-//        // automatically handle clicks on the Home/Up button, so long
-//        // as you specify a parent activity in AndroidManifest.xml.
-//        int id = item.getItemId();
-//
-//        //noinspection SimplifiableIfStatement
-//        if (id == R.id.favorites) {
-//            return true;
-//        }
-//
-//        if (id == R.id.discover) {
-//            return true;
-//        }
-//
-//        return super.onOptionsItemSelected(item);
-//    }
-
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+    }
 }

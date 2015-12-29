@@ -6,6 +6,7 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Intent;
 import android.media.RingtoneManager;
+import android.util.Log;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -18,7 +19,9 @@ import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 import cz.muni.fi.pv256.movio.uco374561.models.Movie;
 import retrofit.RequestInterceptor;
@@ -31,6 +34,7 @@ import retrofit.converter.GsonConverter;
  * Created by collfi on 17. 11. 2015.
  */
 public class DownloadService extends IntentService {
+    public static final long WEEK_IN_MILIS = 604800000;
 
     public DownloadService() {
         super("DownloadService");
@@ -57,10 +61,14 @@ public class DownloadService extends IntentService {
         Download d = adapter.create(Download.class);
         ArrayList<Movie> l = new ArrayList<>();
         try {
-            l.addAll(d.getMovies2("2015-11-09", "2015-11-16", "avg_rating.desc",
+            Date today = new Date();
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+            Date week = new Date(System.currentTimeMillis() + WEEK_IN_MILIS);
+            Log.i("zzzzzz", week.toString() + " *** " + today.toString());
+            l.addAll(d.getNextWeek(dateFormat.format(today), dateFormat.format(week), "avg_rating.desc",
                     "c331638cd30b7ab8a4b73dedbbb62193"));
 
-            l.addAll(d.getMovies1("c331638cd30b7ab8a4b73dedbbb62193"));
+            l.addAll(d.getNowPlaying("c331638cd30b7ab8a4b73dedbbb62193"));
         } catch (Exception e) {
             notification(e.toString());
         }
