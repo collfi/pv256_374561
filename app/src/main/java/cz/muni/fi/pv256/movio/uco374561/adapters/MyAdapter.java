@@ -41,7 +41,6 @@ public class MyAdapter extends BaseAdapter implements StickyGridHeadersBaseAdapt
                 .build();
     }
 
-
     @Override
     public int getCount() {
         return mMovies.size();
@@ -100,7 +99,6 @@ public class MyAdapter extends BaseAdapter implements StickyGridHeadersBaseAdapt
         if (convertView == null) {
             convertView = inflater.inflate(R.layout.grid_header, parent, false);
         }
-        //EDIT YOUR VIEW HEADER HERE
         TextView t = (TextView) convertView.findViewById(R.id.text);
         t.setText(headers[position]);
 

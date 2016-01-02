@@ -10,7 +10,6 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -57,31 +56,23 @@ public class GridFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
-        Log.i("zzzzzz", "on create");
-        Log.i("zzzzzz", savedInstanceState + " - saved");
         source = NETWORK;
         mManager = new MovieManager(getActivity());
         if (savedInstanceState == null) {
             mNetworkMovies = new ArrayList<>();
             mDbMovies = mManager.getAll();
-            //todo asynctask
         } else {
-            Log.i("zzzzzz", savedInstanceState.getInt("source") + " - source");
-
             source = savedInstanceState.getInt("source");
             mNetworkMovies = savedInstanceState.getParcelableArrayList("networkList");
             mDbMovies = savedInstanceState.getParcelableArrayList("dbList");
             mPosition = savedInstanceState.getInt("position");
         }
-
         getActivity().registerReceiver(dataReceiver, new IntentFilter("cz.muni.fi.movio"));
     }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        Log.i("zzzzzz", "grid on create view");
-
         View view = inflater.inflate(R.layout.fragment_grid, container, false);
 
         mGrid = (StickyGridHeadersGridView) view.findViewById(R.id.movies);
@@ -112,7 +103,6 @@ public class GridFragment extends Fragment {
         mEmpty = (TextView) empty.inflate().findViewById(R.id.text_empty);
         mEmpty.setText(R.string.downloading);
         mGrid.setEmptyView(mEmpty);
-        Log.i("zzzzzz", mNetworkMovies.size() + " network size. source: " + source);
         if (isConnected()) {
             if (source == NETWORK) {
                 if (mNetworkMovies.size() == 0) {
@@ -120,11 +110,7 @@ public class GridFragment extends Fragment {
                     getActivity().startService(i);
 
                 } else {
-                    //change
-//            mNetworkAdapter = new MyNetworkAdapter(getActivity(), mNetworkMovies);
                     mNetworkAdapter = new MyAdapter(getActivity(), mNetworkMovies, NETWORK_HEADERS);
-
-//            mGrid.setAdapter(mNetworkAdapter);
                     mGrid.setAdapter(mNetworkAdapter);
                     mGrid.setSelection(mPosition);
                     mGrid.smoothScrollToPosition(mPosition);
@@ -133,7 +119,6 @@ public class GridFragment extends Fragment {
                 if (mDbMovies.size() == 0) {
                     mGrid.setAdapter(new ArrayAdapter<Movie>(getActivity(), R.layout.grid_item));
                     mEmpty.setText(R.string.no_data);
-                    //??? ale neviem inac ako
                 } else {
                     mDbAdapter = new MyAdapter(getActivity(), mDbMovies, DB_HEADERS);
                     mGrid.setAdapter(mDbAdapter);
@@ -156,7 +141,6 @@ public class GridFragment extends Fragment {
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
-        Log.i("zzzzzz", "grid on save instance");
         if (source == NETWORK) {
             outState.putInt("source", NETWORK);
         } else {
@@ -165,7 +149,6 @@ public class GridFragment extends Fragment {
         outState.putParcelableArrayList("networkList", mNetworkMovies);
         outState.putParcelableArrayList("dbList", mDbMovies);
         outState.putInt("position", mGrid.getFirstVisiblePosition());
-        Log.i("zzzzzz", outState.getInt("position") + "  saved position");
         super.onSaveInstanceState(outState);
 
     }
@@ -177,11 +160,7 @@ public class GridFragment extends Fragment {
     private BroadcastReceiver dataReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            Log.i("zzzzzz", "grid receiver");
-//
             mNetworkMovies = intent.getParcelableArrayListExtra("movies");
-//            mNetworkAdapter = new MyNetworkAdapter(getActivity(), mNetworkMovies);
-//            mGrid.setAdapter(mNetworkAdapter);
             if (mNetworkMovies == null || mNetworkMovies.size() == 0) {
                 mEmpty.setText(R.string.no_data);
                 return;
@@ -194,10 +173,9 @@ public class GridFragment extends Fragment {
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
-        Log.i("zzzzzzz", "on create options menu");
-
         if (source == NETWORK) {
             inflater.inflate(R.menu.menu_favorites, menu);
+            return;
         }
         if (source == DB) {
             inflater.inflate(R.menu.menu_discover, menu);
@@ -213,24 +191,16 @@ public class GridFragment extends Fragment {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-        Log.i("zzzzzz", "options menu selected");
-        Log.i("zzzzzz", id + " " + R.id.discover);
-        Log.i("zzzzzz"," options selected: " + mNetworkMovies.size() + " network size. source: " + source);
-
         if (id == R.id.favorites) {
             mDbMovies = mManager.getAll();
             if (mDbMovies.size() == 0) {
                 mGrid.setAdapter(new ArrayAdapter<Movie>(getActivity(), R.layout.grid_item));
-                //??? ale neviem inac ako
                 mEmpty.setText(R.string.no_data);
             } else {
                 mDbAdapter = new MyAdapter(getActivity(), mDbMovies, DB_HEADERS);
                 mGrid.setAdapter(mDbAdapter);
             }
-
             source = DB;
-
-            Log.i(" QQQ", "click favorites");
             getActivity().supportInvalidateOptionsMenu();
             return true;
         }
@@ -242,10 +212,8 @@ public class GridFragment extends Fragment {
             } else {
                 mNetworkAdapter = new MyAdapter(getActivity(), mNetworkMovies, NETWORK_HEADERS);
                 mGrid.setAdapter(mNetworkAdapter);
-                Log.i(" QQQ", "click discover");
             }
             source = NETWORK;
-
             getActivity().supportInvalidateOptionsMenu();
             return true;
         }
@@ -257,16 +225,13 @@ public class GridFragment extends Fragment {
 
     @Override
     public void onResume() {
-        Log.i("zzzzzz", "on resume");
         super.onResume();
         if (source == DB) {
             mDbMovies = mManager.getAll();
             if (mDbMovies == null || mDbMovies.size() == 0) {
                 mGrid.setAdapter(new ArrayAdapter<Movie>(getActivity(), R.layout.grid_item));
-                //??? ale neviem inac ako
                 mEmpty.setText(R.string.no_data);
                 source = DB;
-//                mDbAdapter = new MyDbAdapter(getActivity(), new ArrayList<Movie>());
             } else {
                 mDbAdapter = new MyAdapter(getActivity(), mDbMovies, DB_HEADERS);
                 mGrid.setAdapter(mDbAdapter);
@@ -274,7 +239,6 @@ public class GridFragment extends Fragment {
         } else {
             if (mNetworkMovies == null || mNetworkMovies.size() == 0) {
                 mGrid.setAdapter(new ArrayAdapter<Movie>(getActivity(), R.layout.grid_item));
-                //??? ale neviem inac ako
                 mEmpty.setText(R.string.no_data);
                 source = NETWORK;
             } else {

@@ -3,10 +3,8 @@ package cz.muni.fi.pv256.movio.uco374561.services;
 import android.app.IntentService;
 import android.app.Notification;
 import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.content.Intent;
 import android.media.RingtoneManager;
-import android.util.Log;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -56,15 +54,12 @@ public class DownloadService extends IntentService {
                     }
                 })
                 .build();
-        //http://api.themoviedb.org/3/discover/movie?primary_release_date.gte=2015-11-09&primary_
-        // release_date.lte=2015-11-16&sort_by=avg_rating.desc&api_key=" + "c331638cd30b7ab8a4b73dedbbb62193
         Download d = adapter.create(Download.class);
         ArrayList<Movie> l = new ArrayList<>();
         try {
             Date today = new Date();
             SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
             Date week = new Date(System.currentTimeMillis() + WEEK_IN_MILIS);
-            Log.i("zzzzzz", week.toString() + " *** " + today.toString());
             l.addAll(d.getNextWeek(dateFormat.format(today), dateFormat.format(week), "avg_rating.desc",
                     "c331638cd30b7ab8a4b73dedbbb62193"));
 
@@ -83,8 +78,6 @@ public class DownloadService extends IntentService {
     }
 
     public void notification(String error) {
-        Intent intent = new Intent();
-        PendingIntent pIntent = PendingIntent.getActivity(getApplicationContext(), 0, intent, 0);
         Notification n = new Notification.Builder(this)
                 .setContentTitle("Chyba pri ziskavani filmov")
                 .setContentText(error)
@@ -116,7 +109,6 @@ public class DownloadService extends IntentService {
                         JsonObject jsonObject = jsonElement.getAsJsonObject();
                         if (jsonObject.has("results") && jsonObject.get("results").isJsonArray()) {
                             jsonElement = jsonObject.get("results");
-//                            jsonElement = jsonObject.get("data");
                         }
                     }
 
@@ -125,6 +117,4 @@ public class DownloadService extends IntentService {
             }.nullSafe();
         }
     }
-
-
 }

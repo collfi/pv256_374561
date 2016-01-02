@@ -4,7 +4,6 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -40,8 +39,6 @@ public class DetailFragment extends Fragment {
             mManager.createMovie(mCurrentMovie);
             mAdd.setImageResource(R.drawable.ic_remove_white_24dp);
             v.setOnClickListener(mRemoveListener);
-            Log.i("floating", String.valueOf(mCurrentMovie.getId()) + " - " + mCurrentMovie.getTitle());
-            Log.i("floating", mManager.getAll().size() + " size");
         }
     };
     private View.OnClickListener mRemoveListener = new View.OnClickListener() {
@@ -50,8 +47,6 @@ public class DetailFragment extends Fragment {
             mManager.deleteMovie(mCurrentMovie);
             mAdd.setImageResource(R.drawable.ic_add_white_24dp);
             v.setOnClickListener(mAddListener);
-            Log.i("floating", String.valueOf(mCurrentMovie.getId()) + " - " + mCurrentMovie.getTitle());
-            Log.i("floating", mManager.getAll().size() + " size");
         }
     };
 
@@ -113,26 +108,19 @@ public class DetailFragment extends Fragment {
             ImageLoader.getInstance().displayImage("drawable://" + R.drawable.everest2, mPoster, options);
         } else {
             ImageLoader.getInstance().displayImage("http://image.tmdb.org/t/p/w1280" + m.getPosterPath(), mPoster, options);
-
         }
         mReleaseDate.setText(m.getReleaseDate());
         mTitle.setText(m.getTitle());
         mOverview.setText(m.getOverview());
 
-
-        Log.i("floating", String.valueOf(mCurrentMovie.getId()) + " - " + mCurrentMovie.getTitle());
-        Log.i("floating", mManager.getAll().size() + " size");
         if (mManager.getMovie(String.valueOf(mCurrentMovie.getMovieId())) == null) {
             mAdd.setOnClickListener(mAddListener);
             mAdd.setImageResource(R.drawable.ic_add_white_24dp);
         } else {
             mAdd.setOnClickListener(mRemoveListener);
             mAdd.setImageResource(R.drawable.ic_remove_white_24dp);
-
         }
-
     }
-
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
@@ -140,8 +128,4 @@ public class DetailFragment extends Fragment {
         outState.putParcelable("movie", mMovie);
     }
 
-    @Override
-    public void onPause() {
-        super.onPause();
-    }
 }

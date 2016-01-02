@@ -41,7 +41,6 @@ public class MovieManager {
             throw new NullPointerException("movie == null");
         }
         movie.setId(ContentUris.parseId(mContext.getContentResolver().insert(MovieContract.MovieEntry.CONTENT_URI, prepareMovieValues(movie))));
-        Log.i("gemovie", movie.getId() + " movie id after insert");
     }
 
     public ArrayList<Movie> getAll() {
@@ -67,12 +66,8 @@ public class MovieManager {
         if (id == null) {
             throw new NullPointerException("movie == null");
         }
-        Log.i("getmovie", id + " id v getmovie");
-//        Cursor cursor = mContext.getContentResolver().query(MovieContract.MovieEntry.CONTENT_URI, MOVIE_COLUMNS,
-//                WHERE_ID, new String[]{id}, null);
         Cursor cursor = mContext.getContentResolver().query(MovieContract.MovieEntry.CONTENT_URI, MOVIE_COLUMNS,
                 WHERE_ID, new String[]{id}, null);
-        Log.i("getmovie", cursor.getCount() + " count");
 
         if (cursor.moveToFirst()) {
             Movie m = null;
@@ -80,7 +75,6 @@ public class MovieManager {
                 m = getMovieFromCursor(cursor);
                 cursor.moveToNext();
             }
-            Log.i("getmovie", m.toString());
             cursor.close();
             return m;
         }
@@ -92,9 +86,6 @@ public class MovieManager {
         if (movie == null) {
             throw new NullPointerException("movie == null");
         }
-//        if (movie.getId() == null) {
-//            throw new IllegalStateException("movie id cannot be null");
-//        }
         if (movie.getTitle() == null) {
             throw new IllegalStateException("movie title cannot be null");
         }
@@ -108,7 +99,6 @@ public class MovieManager {
             throw new NullPointerException("movie == null");
         }
         mContext.getContentResolver().delete(MovieContract.MovieEntry.CONTENT_URI, WHERE_ID, new String[]{String.valueOf(movie.getMovieId())});
-//        mContext.getContentResolver().delete(MovieContract.MovieEntry.CONTENT_URI, WHERE_ID, new String[]{String.valueOf(movie.getId())});
         movie.setId(null);
 
     }

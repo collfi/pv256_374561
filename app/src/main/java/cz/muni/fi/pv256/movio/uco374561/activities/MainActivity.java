@@ -6,8 +6,6 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
-import java.util.List;
-
 import cz.muni.fi.pv256.movio.uco374561.BuildConfig;
 import cz.muni.fi.pv256.movio.uco374561.R;
 import cz.muni.fi.pv256.movio.uco374561.fragments.DetailFragment;
@@ -17,7 +15,6 @@ import cz.muni.fi.pv256.movio.uco374561.sync.MovieSyncAdapter;
 
 public class MainActivity extends AppCompatActivity implements GridFragment.OnItemSelectedListener {
 
-    private List<Movie> mMovies;
     private boolean mTwoPane;
 
     @Override
@@ -51,8 +48,6 @@ public class MainActivity extends AppCompatActivity implements GridFragment.OnIt
             intent.putExtra("movie", m);
             startActivity(intent);
         }
-
-
     }
 
     @Override

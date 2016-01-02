@@ -4,7 +4,6 @@ import android.app.Application;
 import android.content.Context;
 import android.os.Build;
 import android.os.StrictMode;
-import android.util.Log;
 
 import com.nostra13.universalimageloader.cache.disc.naming.Md5FileNameGenerator;
 import com.nostra13.universalimageloader.cache.memory.impl.LruMemoryCache;
@@ -24,7 +23,6 @@ public class App extends Application {
             initStrictMode();
         }
         initImageLoader(getApplicationContext());
-        Log.i("QQQ", "app exit");
     }
 
     private void initStrictMode() {

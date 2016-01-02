@@ -11,8 +11,6 @@ import retrofit.http.Query;
  * Created by collfi on 17. 11. 2015.
  */
 public interface Download {
-    //    .url("http://api.themoviedb.org/3/movie/now_playing?api_key=" + "c331638cd30b7ab8a4b73dedbbb62193")
-//    @GET("/movie?primary_release_date.gte=2015-11-09&primary_release_date.lte=2015-11-16&sort_by=avg_rating.desc&api_key=" + "c331638cd30b7ab8a4b73dedbbb62193")
     @GET("/movie/now_playing")
     ArrayList<Movie> getNowPlaying(@Query("api_key") String key);
 

@@ -15,13 +15,9 @@ public class DetailActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
         Movie m = getIntent().getExtras().getParcelable("movie");
-//        getSupportFragmentManager().beginTransaction().replace(R.id.detail,
-//                DetailFragment.newInstance(m)).commit();
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         if (savedInstanceState == null) {
-            // Create the detail fragment and add it to the activity
-            // using a fragment transaction.
             DetailFragment fragment = DetailFragment.newInstance(m);
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.detail, fragment)
@@ -33,14 +29,6 @@ public class DetailActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == android.R.id.home) {
-            // This ID represents the Home or Up button. In the case of this
-            // activity, the Up button is shown. Use NavUtils to allow users
-            // to navigate up one level in the application structure. For
-            // more details, see the Navigation pattern on Android Design:
-            //
-            // http://developer.android.com/design/patterns/navigation.html#up-vs-back
-            //
-//            NavUtils.navigateUpTo(this, new Intent(this, MainActivity.class));
             finish();
             return true;
         }
