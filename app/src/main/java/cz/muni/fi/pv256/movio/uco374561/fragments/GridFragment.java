@@ -242,7 +242,7 @@ public class GridFragment extends Fragment {
                 mEmpty.setText(R.string.no_data);
                 source = NETWORK;
             } else {
-                mDbAdapter = new MyAdapter(getActivity(), mNetworkMovies, DB_HEADERS);
+                mDbAdapter = new MyAdapter(getActivity(), mNetworkMovies, NETWORK_HEADERS);
                 mGrid.setAdapter(mDbAdapter);
             }
         }
