@@ -89,6 +89,9 @@ public class MovieManager {
         if (movie.getTitle() == null) {
             throw new IllegalStateException("movie title cannot be null");
         }
+        if (movie.getMovieId() == null) {
+            throw new IllegalStateException("movie id cannot be null");
+        }
 
         mContext.getContentResolver().update(MovieContract.MovieEntry.CONTENT_URI, prepareMovieValues(movie), WHERE_ID, new String[]{String.valueOf(movie.getMovieId())});
     }

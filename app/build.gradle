@@ -1,7 +1,7 @@
 def VERSION_MAJOR = 0
 def VERSION_MINOR = 1
-def VERSION_PATCH = 0
-def VERSION_BUILD = 0
+def VERSION_PATCH = 1
+def VERSION_BUILD = 1
 
 apply plugin: 'com.android.application'
 
@@ -13,7 +13,7 @@ android {
         applicationId "cz.muni.fi.pv256.movio.uco374561"
         minSdkVersion 15
         targetSdkVersion 22
-        versionCode 1
+        versionCode 3
         versionName "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}"
         resConfigs "sk", "en"
 

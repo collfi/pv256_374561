@@ -29,7 +29,7 @@ import retrofit.client.OkClient;
  * Created by collfi on 5. 12. 2015.
  */
 public class MovieSyncAdapter extends AbstractThreadedSyncAdapter {
-    public static final int SYNC_INTERVAL = 2;
+    public static final int SYNC_INTERVAL = 60 * 60 * 24;
     public static final int SYNC_FLEXTIME = SYNC_INTERVAL / 3;
     private Context mContext;
 
@@ -41,11 +41,6 @@ public class MovieSyncAdapter extends AbstractThreadedSyncAdapter {
 
     @Override
     public void onPerformSync(Account account, Bundle extras, String authority, ContentProviderClient provider, SyncResult syncResult) {
-        if (!isConnected()) {
-            notification("You are not connected to the internet.", "Network error");
-            return;
-        }
-
         RestAdapter adapter = new RestAdapter.Builder()
                 .setEndpoint("http://api.themoviedb.org/3/")
                 .setClient(new OkClient())

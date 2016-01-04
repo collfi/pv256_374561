@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -54,6 +55,8 @@ public class GridFragment extends Fragment {
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
+        Log.i("grid", "on create");
+
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
         source = NETWORK;
@@ -73,6 +76,8 @@ public class GridFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        Log.i("grid", "on create view");
+
         View view = inflater.inflate(R.layout.fragment_grid, container, false);
 
         mGrid = (StickyGridHeadersGridView) view.findViewById(R.id.movies);
@@ -141,6 +146,7 @@ public class GridFragment extends Fragment {
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
+        Log.i("grid", "on save instance state");
         if (source == NETWORK) {
             outState.putInt("source", NETWORK);
         } else {
@@ -212,6 +218,7 @@ public class GridFragment extends Fragment {
             } else {
                 mNetworkAdapter = new MyAdapter(getActivity(), mNetworkMovies, NETWORK_HEADERS);
                 mGrid.setAdapter(mNetworkAdapter);
+
             }
             source = NETWORK;
             getActivity().supportInvalidateOptionsMenu();
@@ -225,13 +232,17 @@ public class GridFragment extends Fragment {
 
     @Override
     public void onResume() {
+        Log.i("grid", "on resume");
         super.onResume();
+        if (mGrid.getAdapter() != null) return;
         if (source == DB) {
             mDbMovies = mManager.getAll();
             if (mDbMovies == null || mDbMovies.size() == 0) {
                 mGrid.setAdapter(new ArrayAdapter<Movie>(getActivity(), R.layout.grid_item));
                 mEmpty.setText(R.string.no_data);
                 source = DB;
+            } else if (mDbAdapter != null) {
+                mGrid.setAdapter(mDbAdapter);
             } else {
                 mDbAdapter = new MyAdapter(getActivity(), mDbMovies, DB_HEADERS);
                 mGrid.setAdapter(mDbAdapter);
@@ -241,6 +252,8 @@ public class GridFragment extends Fragment {
                 mGrid.setAdapter(new ArrayAdapter<Movie>(getActivity(), R.layout.grid_item));
                 mEmpty.setText(R.string.no_data);
                 source = NETWORK;
+            }  else if (mNetworkAdapter != null) {
+                mGrid.setAdapter(mNetworkAdapter);
             } else {
                 mDbAdapter = new MyAdapter(getActivity(), mNetworkMovies, NETWORK_HEADERS);
                 mGrid.setAdapter(mDbAdapter);

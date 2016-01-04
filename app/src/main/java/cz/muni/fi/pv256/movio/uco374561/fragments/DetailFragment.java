@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -39,6 +40,7 @@ public class DetailFragment extends Fragment {
             mManager.createMovie(mCurrentMovie);
             mAdd.setImageResource(R.drawable.ic_remove_white_24dp);
             v.setOnClickListener(mRemoveListener);
+            Toast.makeText(getActivity(), "Movie added to favorites.", Toast.LENGTH_SHORT).show();
         }
     };
     private View.OnClickListener mRemoveListener = new View.OnClickListener() {
@@ -47,6 +49,7 @@ public class DetailFragment extends Fragment {
             mManager.deleteMovie(mCurrentMovie);
             mAdd.setImageResource(R.drawable.ic_add_white_24dp);
             v.setOnClickListener(mAddListener);
+            Toast.makeText(getActivity(), "Movie removed from favorites.", Toast.LENGTH_SHORT).show();
         }
     };
 
@@ -100,12 +103,12 @@ public class DetailFragment extends Fragment {
     public void update(Movie m) {
         mCurrentMovie = m;
         if (m.getCoverPath() == null) {
-            ImageLoader.getInstance().displayImage("drawable://" + R.drawable.everest, mCover, options);
+            ImageLoader.getInstance().displayImage("drawable://" + R.drawable.no_image, mCover, options);
         } else {
             ImageLoader.getInstance().displayImage("http://image.tmdb.org/t/p/w342" + m.getCoverPath(), mCover, options);
         }
         if (m.getPosterPath() == null) {
-            ImageLoader.getInstance().displayImage("drawable://" + R.drawable.everest2, mPoster, options);
+            ImageLoader.getInstance().displayImage("drawable://" + R.drawable.no_image2, mPoster, options);
         } else {
             ImageLoader.getInstance().displayImage("http://image.tmdb.org/t/p/w1280" + m.getPosterPath(), mPoster, options);
         }
